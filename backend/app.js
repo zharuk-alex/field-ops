@@ -20,7 +20,7 @@ app.use(express.json());
 const allowedOrigins = [
   "https://localhost:9000",
   "http://localhost:9000",
-  "https://field-ops.vercel.app",
+  "https://field-ops-ten.vercel.app",
 ];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
