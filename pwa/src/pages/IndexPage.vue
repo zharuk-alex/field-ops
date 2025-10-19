@@ -1,14 +1,20 @@
 <template>
   <q-page class="flex flex-center">
-    <pre>{{ test }}</pre>
+    <q-btn color="primary" icon="check" label="OK" @click="test" />
   </q-page>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { api } from 'src/boot/axios'
 
-//
-const $store = useStore();
-const test = computed(()=>$store.getters.init)
+// import { computed } from 'vue';
+// import { useStore } from 'vuex';
+
+// //
+// const $store = useStore();
+const test = async () => {
+  console.log('click')
+  const result = await api.get('/health/live')
+  console.log('health', result)
+}
 </script>
