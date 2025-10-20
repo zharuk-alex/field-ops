@@ -128,7 +128,6 @@ export default defineConfig((ctx) => {
         '/api': {
           target: `${API_PROTOCOL}://${API_HOST}:${API_PORT}`,
           changeOrigin: true,
-          rewrite: (p) => p.replace(/^\/api/, ''),
         },
       },
     },
