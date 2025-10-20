@@ -12,7 +12,11 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "postinstall": "quasar prepare",
+    "dev:pwa": "cross-env VITE_BUILD_TARGET=pwa quasar dev",
+    "dev:admin": "cross-env VITE_BUILD_TARGET=admin quasar dev --port 9100",
+    "build:pwa": "cross-env VITE_BUILD_TARGET=pwa VITE_API_BASE_URL=/api quasar build -m pwa",
+    "build:admin": "cross-env VITE_BUILD_TARGET=admin VITE_API_BASE_URL=https://field-ops.onrender.com/api quasar build -m spa"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
@@ -30,6 +34,7 @@
     "@vue/devtools": "^8.0.3",
     "@vue/eslint-config-prettier": "^10.1.0",
     "autoprefixer": "^10.4.2",
+    "cross-env": "^10.1.0",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^10.4.0",
     "globals": "^16.4.0",

@@ -4,9 +4,11 @@
 import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
 import { config as dotenv } from 'dotenv'
+import path from 'node:path'
 
 dotenv({ path: new URL('../env/.env.local', import.meta.url) })
 
+const BUILD_TARGET = process.env.VITE_BUILD_TARGET || 'pwa'
 const API_HOST = process.env.API_HOST || 'localhost'
 const API_PORT = process.env.API_PORT || '3000'
 const API_PROTOCOL = process.env.API_PROTOCOL || 'http'
@@ -40,13 +42,23 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
+      // output folders: dist/pwa or dist/admin
+      distDir: BUILD_TARGET === 'admin' ? 'dist/admin' : 'dist/pwa',
       env: {
-        VITE_API_BASE_URL: process.env.APP_API_BASE_URL,
+        VITE_BUILD_TARGET: BUILD_TARGET,
+        VITE_API_BASE_URL: process.env.VITE_API_BASE_URL,
       },
+      // env: {
+      //   VITE_API_BASE_URL: process.env.APP_API_BASE_URL,
+      // },
 
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',
+      },
+
+      alias: {
+        '@': path.join(__dirname, './src'),
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -98,14 +110,25 @@ export default defineConfig((ctx) => {
         ],
       ],
     },
+    // devServer: {
+    //   https: true,
+    //   vueDevtools: false,
+    //   open: false,
+    //   proxy: {
+    //     '/api': {
+    //       target: `${API_PROTOCOL}://${API_HOST}:${API_PORT}`,
+    //       changeOrigin: true,
+    //     },
+    //   },
+    // },
     devServer: {
       https: true,
-      vueDevtools: false,
-      open: false,
+      port: BUILD_TARGET === 'admin' ? 9100 : 9000,
       proxy: {
         '/api': {
           target: `${API_PROTOCOL}://${API_HOST}:${API_PORT}`,
           changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/api/, ''),
         },
       },
     },
