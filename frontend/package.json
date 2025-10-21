@@ -15,7 +15,7 @@
     "postinstall": "quasar prepare",
     "dev:pwa": "cross-env VITE_BUILD_TARGET=pwa quasar dev",
     "dev:admin": "cross-env VITE_BUILD_TARGET=admin quasar dev --port 9100",
-    "build:pwa": "cross-env VITE_BUILD_TARGET=pwa VITE_API_BASE_URL=/api quasar build -m pwa",
+    "build:pwa": "cross-env VITE_BUILD_TARGET=pwa VITE_API_BASE_URL=https://field-ops.onrender.com/api quasar build -m pwa",
     "build:admin": "cross-env VITE_BUILD_TARGET=admin VITE_API_BASE_URL=https://field-ops.onrender.com/api quasar build -m spa"
   },
   "dependencies": {

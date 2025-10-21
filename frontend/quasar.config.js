@@ -48,9 +48,6 @@ export default defineConfig((ctx) => {
         VITE_BUILD_TARGET: BUILD_TARGET,
         VITE_API_BASE_URL: process.env.VITE_API_BASE_URL,
       },
-      // env: {
-      //   VITE_API_BASE_URL: process.env.APP_API_BASE_URL,
-      // },
 
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
@@ -110,17 +107,6 @@ export default defineConfig((ctx) => {
         ],
       ],
     },
-    // devServer: {
-    //   https: true,
-    //   vueDevtools: false,
-    //   open: false,
-    //   proxy: {
-    //     '/api': {
-    //       target: `${API_PROTOCOL}://${API_HOST}:${API_PORT}`,
-    //       changeOrigin: true,
-    //     },
-    //   },
-    // },
     devServer: {
       https: true,
       port: BUILD_TARGET === 'admin' ? 9100 : 9000,
