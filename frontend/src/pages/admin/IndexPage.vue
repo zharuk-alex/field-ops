@@ -11,8 +11,7 @@ import { api } from 'src/boot/axios'
 import { computed } from 'vue'
 
 const test = async () => {
-  console.log('click')
-  const result = await api.get('/health/live')
+  const result = await api.get('/api/health/live')
   console.log('health', result)
 }
 

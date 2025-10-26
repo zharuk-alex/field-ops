@@ -1,10 +1,17 @@
 import { createStore } from 'vuex'
+import uiServices from './modules/ui-services.js'
+import auth from './modules/auth.js'
+import text from './modules/text.js'
+import hydrate from './plugins/hydrate.js'
 
 const store = createStore({
-  // enable strict mode (adds overhead!)
-  // for dev mode and --debug builds only
   strict: process.env.DEBUGGING,
-  modules: {},
+  modules: {
+    auth,
+    text,
+    uiServices,
+  },
+  plugins: [hydrate],
   state: {},
   mutations: {},
   actions: {},
