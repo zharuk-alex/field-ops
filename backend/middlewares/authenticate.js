@@ -1,17 +1,16 @@
 import HttpError from "../helpers/HttpError.js";
-
-import { findUser } from "../services/authServices.js";
-
+import User from "../db/models/User.js";
 import { verifyToken } from "../helpers/jwt.js";
 
 const authenticate = async (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
-    return next(HttpError(401));
+    return next(HttpError(401, "Authorization header missing"));
   }
 
   const [bearer, token] = authorization.split(" ");
-  if (bearer !== "Bearer") {
+
+  if (bearer !== "Bearer" || !token) {
     return next(HttpError(401, "Bearer missing"));
   }
 
@@ -20,17 +19,16 @@ const authenticate = async (req, res, next) => {
     return next(HttpError(401, error.message));
   }
 
-  const user = await findUser({ email: data.email });
+  const user = await User.findByPk(data.id);
   if (!user) {
     return next(HttpError(401, "User not found"));
   }
 
   if (user.token !== token) {
-    return next(HttpError(401));
+    return next(HttpError(401, "Token mismatch"));
   }
 
   req.user = user;
-
   next();
 };
 

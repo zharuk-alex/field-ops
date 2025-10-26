@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 
-const { JWT_SECRET } = process.env;
+const JWT_SECRET =
+  process.env.JWT_SECRET || "dev-fallback-secret-please-change";
 
 export const createToken = (payload) =>
-  jwt.sign(payload, JWT_SECRET, { expiresIn: "24h" });
+  jwt.sign(payload, JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || "7d" });
 
 export const verifyToken = (token) => {
   try {

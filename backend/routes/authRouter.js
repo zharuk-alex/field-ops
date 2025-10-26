@@ -10,7 +10,7 @@ import {
   authRegisterSchema,
   authLoginSchema,
   authResendVerifySchema,
-} from "../schemas/authSchemas.js";
+} from "../validators/auth.js";
 
 import {
   register,

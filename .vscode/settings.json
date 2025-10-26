@@ -1,0 +1,22 @@
+{
+  "volar.takeOverMode": true,
+  "emmet.includeLanguages": {
+    "vue": "html",
+    "javascript": "javascriptreact"
+  },
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.tabCompletion": "on",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": ["source.fixAll.eslint"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"]
+}
