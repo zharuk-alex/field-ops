@@ -1,39 +1,55 @@
 import { DataTypes } from "sequelize";
-
 import sequelize from "../Sequelize.js";
 
-const User = sequelize.define("users", {
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
+const User = sequelize.define(
+  "User",
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      unique: true,
+      validate: { isEmail: true },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    avatarURL: {
+      type: DataTypes.STRING,
+    },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
+    verify: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    verificationToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    role: {
+      type: DataTypes.ENUM("admin", "manager", "auditor"),
+      allowNull: false,
+      defaultValue: "auditor",
+    },
+    companyId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "companies", key: "id" },
+    },
   },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  subscription: {
-    type: DataTypes.ENUM,
-    values: ["starter", "pro", "business"],
-    defaultValue: "starter",
-  },
-  token: {
-    type: DataTypes.STRING,
-    defaultValue: null,
-  },
-  avatarURL: {
-    type: DataTypes.STRING,
-  },
-  verify: {
-    type: Boolean,
-    default: false,
-  },
-  verificationToken: {
-    type: String,
-    required: [true, "Verify token is required"],
-  },
-});
-
-// User.sync({ alter: true });
+  {
+    tableName: "users",
+    timestamps: true,
+  }
+);
 
 export default User;
