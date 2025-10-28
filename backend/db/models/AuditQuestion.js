@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../Sequelize.js";
+import { QUESTION_TYPES } from "#root/constants/index.js";
 
 const AuditQuestion = sequelize.define(
   "AuditQuestion",
@@ -13,25 +14,27 @@ const AuditQuestion = sequelize.define(
       type: DataTypes.UUID,
       allowNull: false,
       references: { model: "audits", key: "id" },
+      field: "audit_id",
     },
     templateQuestionId: {
       type: DataTypes.UUID,
       allowNull: true,
       references: { model: "template_questions", key: "id" },
+      field: "template_question_id",
+    },
+    questionId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "questions", key: "id" },
+      field: "question_id",
     },
     questionText: {
       type: DataTypes.TEXT,
       allowNull: false,
+      field: "question_text",
     },
     type: {
-      type: DataTypes.ENUM(
-        "text",
-        "number",
-        "boolean",
-        "choice",
-        "photo",
-        "rating"
-      ),
+      type: DataTypes.ENUM(...QUESTION_TYPES),
       allowNull: false,
       defaultValue: "text",
     },
@@ -47,6 +50,7 @@ const AuditQuestion = sequelize.define(
   {
     tableName: "audit_questions",
     timestamps: true,
+    underscored: true,
   }
 );
 

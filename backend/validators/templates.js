@@ -1,10 +1,11 @@
 import Joi from "joi";
+import { QUESTION_TYPES } from "#root/constants/index.js";
 
 const questionSchema = Joi.object({
   id: Joi.string().uuid().optional(),
   questionText: Joi.string().trim().min(1).required(),
   type: Joi.string()
-    .valid("text", "number", "choice", "boolean", "photo")
+    .valid(...QUESTION_TYPES)
     .required(),
   choices: Joi.array().items(Joi.string().trim()).default([]),
   required: Joi.boolean().default(false),
@@ -12,17 +13,17 @@ const questionSchema = Joi.object({
 });
 
 export const createTemplateSchema = Joi.object({
-  name: Joi.string().trim().min(1).required(),
+  name: Joi.string().required(),
   description: Joi.string().allow("", null),
-  companyId: Joi.string().uuid().optional(),
-  questions: Joi.array().items(questionSchema).min(1).required(),
+  companyId: Joi.string().guid({ version: "uuidv4" }).optional(),
+  questions: Joi.array().items(questionSchema).optional(),
 });
 
 export const updateTemplateSchema = Joi.object({
   name: Joi.string().trim().min(1).optional(),
   description: Joi.string().allow("", null),
   companyId: Joi.string().uuid().optional(),
-  questions: Joi.array().items(questionSchema).min(1).required(),
+  questions: Joi.array().items(questionSchema).optional(),
 });
 
 export const listTemplatesSchema = Joi.object({
