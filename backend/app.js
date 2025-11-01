@@ -15,6 +15,7 @@ import usersRouter from "./routes/usersRouter.js";
 import companiesRouter from "./routes/companiesRouter.js";
 import templatesRouter from "./routes/templatesRouter.js";
 import questionsRouter from "./routes/questionsRouter.js";
+import locationsRouter from "./routes/locationsRouter.js";
 
 import "./db/models/index.js";
 import sequelize from "./db/Sequelize.js";
@@ -46,6 +47,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/companies", companiesRouter);
 app.use("/api/templates", templatesRouter);
 app.use("/api/questions", questionsRouter);
+app.use("/api/locations", locationsRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });

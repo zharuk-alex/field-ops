@@ -1,6 +1,33 @@
 import HttpError from "../helpers/HttpError.js";
 import * as questionsService from "../services/questionsService.js";
 
+export const listQuestions = async (req, res, next) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = "createdAt",
+      order = "desc",
+      search,
+      companyId,
+    } = req.query;
+
+    const result = await questionsService.findQuestions({
+      page,
+      limit,
+      sortBy,
+      order,
+      search,
+      companyId,
+      debug: true,
+    });
+
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const createQuestion = async (req, res) => {
   const {
     questionText,
@@ -22,7 +49,7 @@ export const createQuestion = async (req, res) => {
 
   const question = await questionsService.createQuestion({
     questionText,
-    companyId,
+    companyId: companyId === "" ? null : companyId,
     type,
     choices,
     status,
@@ -30,22 +57,6 @@ export const createQuestion = async (req, res) => {
   });
 
   res.status(201).json(question);
-};
-
-export const listQuestions = async (req, res) => {
-  const { companyId: qCompanyId, status, page = 1, limit = 20, q } = req.query;
-
-  const companyId =
-    req.user.role === "manager" ? req.user.companyId : qCompanyId;
-
-  const result = await questionsService.listQuestions({
-    companyId,
-    status,
-    page,
-    limit,
-    q,
-  });
-  res.json(result);
 };
 
 export const getQuestion = async (req, res) => {
@@ -74,6 +85,8 @@ export const updateQuestion = async (req, res) => {
     const companyId = payload.companyId ?? question.companyId;
     if (companyId !== req.user.companyId) throw HttpError(403, "Forbidden");
   }
+
+  payload.companyId = payload.companyId === "" ? null : payload.companyId;
 
   const updated = await questionsService.updateQuestion(id, payload);
   res.json(updated);

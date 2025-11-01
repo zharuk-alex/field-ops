@@ -11,7 +11,7 @@ const Location = sequelize.define(
     },
     companyId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: { model: "companies", key: "id" },
     },
     name: {
@@ -33,6 +33,12 @@ const Location = sequelize.define(
     meta: {
       type: DataTypes.JSONB,
       allowNull: true,
+    },
+
+    status: {
+      type: DataTypes.ENUM("active", "inactive"),
+      allowNull: false,
+      defaultValue: "active",
     },
   },
   {

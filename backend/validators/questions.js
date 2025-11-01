@@ -1,9 +1,13 @@
 import Joi from "joi";
-import { QUESTION_TYPES, QUESTION_STATUSES } from "#root/constants/index.js";
+import {
+  QUESTION_TYPES,
+  QUESTION_STATUSES,
+  QUESTIONS_ALLOWED_SORT,
+} from "#root/constants/index.js";
 
 export const createQuestionSchema = Joi.object({
   questionText: Joi.string().min(1).required(),
-  companyId: Joi.string().uuid().optional(),
+  companyId: Joi.string().uuid().allow(null).empty("").optional(),
   type: Joi.string()
     .valid(...QUESTION_TYPES)
     .required(),
@@ -19,7 +23,7 @@ export const createQuestionSchema = Joi.object({
 
 export const updateQuestionSchema = Joi.object({
   questionText: Joi.string().min(1).optional(),
-  companyId: Joi.string().uuid().optional(),
+  companyId: Joi.string().uuid().allow(null).empty("").optional(),
   type: Joi.string()
     .valid(...QUESTION_TYPES)
     .optional(),
@@ -30,11 +34,15 @@ export const updateQuestionSchema = Joi.object({
 });
 
 export const listQuestionsQuerySchema = Joi.object({
-  companyId: Joi.string().uuid().optional(),
+  companyId: Joi.string().uuid().allow(null).empty("").optional(),
   status: Joi.string()
     .valid(...QUESTION_STATUSES)
     .optional(),
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(20),
-  q: Joi.string().allow("").optional(),
-});
+  search: Joi.string().allow("").optional(),
+  sortBy: Joi.string()
+    .valid(...QUESTIONS_ALLOWED_SORT)
+    .default("createdAt"),
+  order: Joi.string().lowercase().valid("asc", "desc").default("desc"),
+}).rename("q", "search", { ignoreUndefined: true, override: true });
