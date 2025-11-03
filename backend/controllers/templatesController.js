@@ -1,14 +1,15 @@
-import sequelize from "../db/Sequelize.js";
 import HttpError from "../helpers/HttpError.js";
-import { Template, TemplateQuestion, Question } from "../db/models/index.js";
+import {
+  createTemplate as svcCreate,
+  findTemplates as svcFind,
+  getTemplateById as svcGetById,
+  updateTemplate as svcUpdate,
+  softDeleteTemplate as svcDelete,
+} from "../services/templatesService.js";
 
-function ensureCanReadTemplate(user, template) {
-  if (user.role === "admin") {
-    return true;
-  }
-  if (!template.companyId) {
-    return true;
-  }
+function canReadTemplate(user, template) {
+  if (user.role === "admin") return true;
+  if (!template.companyId) return true;
   return user.companyId && template.companyId === user.companyId;
 }
 
@@ -16,266 +17,115 @@ export const createTemplate = async (req, res) => {
   const {
     name,
     description = null,
+    status = "active",
     companyId = null,
     questions = [],
+    locations = [],
   } = req.body;
 
-  if (!name) throw HttpError(400, "name is required");
+  if (!name || !String(name).trim()) throw HttpError(400, "name is required");
 
-  const templateCompanyId =
-    req.user?.role === "admin" ? companyId : req.user?.companyId;
+  const effectiveCompanyId =
+    req.user?.role === "admin" ? companyId : req.user?.companyId ?? null;
 
-  const t = await sequelize.transaction();
-  try {
-    const template = await Template.create(
-      {
-        name,
-        description,
-        companyId: templateCompanyId,
-        createdBy: req.user?.id ?? null,
-      },
-      { transaction: t }
-    );
+  const created = await svcCreate({
+    name: String(name).trim(),
+    description,
+    status,
+    companyId: effectiveCompanyId,
+    createdBy: req.user?.id ?? null,
+    questions,
+    locations,
+  });
 
-    const tqRows = [];
-
-    for (let i = 0; i < (questions || []).length; i++) {
-      const q = questions[i];
-
-      if (q.questionId) {
-        const master = await Question.findOne({
-          where: { id: q.questionId, status: "active" },
-          transaction: t,
-        });
-        if (!master) {
-          await t.rollback();
-          throw HttpError(
-            400,
-            `Question not found or inactive: ${q.questionId}`
-          );
-        }
-
-        if (
-          master.companyId &&
-          templateCompanyId &&
-          master.companyId !== templateCompanyId &&
-          req.user?.role !== "admin"
-        ) {
-          await t.rollback();
-          throw HttpError(403, "Cannot attach question from different company");
-        }
-
-        tqRows.push({
-          templateId: template.id,
-          questionId: master.id,
-          questionText: master.questionText,
-          type: master.type,
-          choices: master.choices,
-          required: !!q.required,
-          order: typeof q.order === "number" ? q.order : i,
-        });
-      } else if (q.questionText) {
-        const newQ = await Question.create(
-          {
-            questionText: q.questionText,
-            type: q.type ?? "text",
-            choices: q.choices ?? null,
-            companyId: templateCompanyId,
-            status: "active",
-            createdBy: req.user?.id ?? null,
-          },
-          { transaction: t }
-        );
-
-        tqRows.push({
-          templateId: template.id,
-          questionId: newQ.id,
-          questionText: newQ.questionText,
-          type: newQ.type,
-          choices: newQ.choices,
-          required: !!q.required,
-          order: typeof q.order === "number" ? q.order : i,
-        });
-      } else {
-        await t.rollback();
-        throw HttpError(
-          400,
-          "Invalid question item. Provide questionId or questionText"
-        );
-      }
-    }
-
-    if (tqRows.length) {
-      await TemplateQuestion.bulkCreate(tqRows, { transaction: t });
-    }
-
-    await t.commit();
-
-    const result = await Template.findByPk(template.id, {
-      include: [
-        {
-          model: TemplateQuestion,
-          as: "items",
-          include: [{ model: Question, as: "question" }],
-        },
-      ],
-      order: [[{ model: TemplateQuestion, as: "items" }, "order", "ASC"]],
-    });
-
-    res.status(201).json(result);
-  } catch (err) {
-    await t.rollback();
-    throw err;
-  }
+  return res.status(201).json(created);
 };
 
 export const listTemplates = async (req, res) => {
   const page = Number(req.query.page || 1);
   const limit = Number(req.query.limit || 20);
-  const offset = (page - 1) * limit;
+  const sortBy = String(req.query.sortBy || "createdAt");
+  const order = String(req.query.order || "desc");
 
-  let where = {};
-
-  const qCompanyId = req.query.companyId;
-
+  let companyId = null;
   if (req.user.role === "admin") {
-    if (qCompanyId) where.companyId = qCompanyId;
+    if (req.query.companyId) companyId = req.query.companyId;
   } else {
-    where.companyId = req.user.companyId || null;
+    companyId = req.user.companyId || null;
   }
 
-  const { rows, count } = await Template.findAndCountAll({
-    where,
-    order: [["createdAt", "DESC"]],
-    offset,
-    limit,
-    include: [{ model: TemplateQuestion, as: "questions" }],
-  });
-
-  res.json({
+  const result = await svcFind({
     page,
     limit,
-    total: count,
-    items: rows,
+    companyId,
+    sortBy,
+    order,
   });
+
+  return res.json(result);
 };
 
 export const getTemplate = async (req, res) => {
   const { id } = req.params;
-
-  const template = await Template.findByPk(id, {
-    include: [
-      { model: TemplateQuestion, as: "questions", order: [["order", "ASC"]] },
-    ],
-  });
+  const template = await svcGetById(id);
   if (!template) throw HttpError(404, "Template not found");
-
-  if (!ensureCanReadTemplate(req.user, template)) {
-    throw HttpError(403, "Forbidden");
-  }
-
-  res.json(template);
+  if (!canReadTemplate(req.user, template)) throw HttpError(403, "Forbidden");
+  return res.json(template);
 };
 
 export const updateTemplate = async (req, res) => {
   const { id } = req.params;
-  const { name, description, companyId: bodyCompanyId, questions } = req.body;
+  const {
+    name,
+    description,
+    status,
+    companyId: bodyCompanyId,
+    questions,
+    locations,
+  } = req.body;
 
-  const template = await Template.findByPk(id);
-  if (!template) throw HttpError(404, "Template not found");
+  const existing = await svcGetById(id);
+  if (!existing) throw HttpError(404, "Template not found");
 
   if (req.user.role !== "admin") {
-    if (!req.user.companyId || template.companyId !== req.user.companyId) {
+    if (!req.user.companyId || existing.companyId !== req.user.companyId) {
       throw HttpError(403, "Forbidden");
     }
   }
 
-  if (questions !== undefined && !Array.isArray(questions)) {
-    throw HttpError(400, "questions must be an array");
+  const payload = {
+    name,
+    description,
+    status,
+    companyId: req.user.role === "admin" ? bodyCompanyId : existing.companyId,
+  };
+
+  if (questions !== undefined) {
+    if (!Array.isArray(questions))
+      throw HttpError(400, "questions must be an array");
+    payload.questions = questions;
+  }
+  if (locations !== undefined) {
+    if (!Array.isArray(locations))
+      throw HttpError(400, "locations must be an array");
+    payload.locations = locations;
   }
 
-  if (questions === undefined) {
-    await template.update({
-      name: name ?? template.name,
-      description: description ?? template.description,
-      companyId:
-        req.user.role === "admin"
-          ? bodyCompanyId ?? template.companyId
-          : template.companyId,
-    });
-
-    const withQuestions = await Template.findByPk(template.id, {
-      include: [
-        {
-          model: TemplateQuestion,
-          as: "questions",
-          order: [["order", "ASC"]],
-        },
-      ],
-    });
-
-    return res.json(withQuestions);
-  }
-
-  const t = await sequelize.transaction();
-  try {
-    await template.update(
-      {
-        name: name ?? template.name,
-        description: description ?? template.description,
-        companyId:
-          req.user.role === "admin"
-            ? bodyCompanyId ?? template.companyId
-            : template.companyId,
-      },
-      { transaction: t }
-    );
-
-    await TemplateQuestion.destroy({
-      where: { templateId: template.id },
-      transaction: t,
-    });
-
-    const prepared = (questions || []).map((q, i) => ({
-      templateId: template.id,
-      questionText: q.questionText ?? "",
-      type: q.type ?? "text",
-      choices: Array.isArray(q.choices) ? q.choices : [],
-      required: !!q.required,
-      order: typeof q.order === "number" ? q.order : i + 1,
-    }));
-
-    if (prepared.length) {
-      await TemplateQuestion.bulkCreate(prepared, { transaction: t });
-    }
-
-    await t.commit();
-
-    const withQuestions = await Template.findByPk(template.id, {
-      include: [
-        { model: TemplateQuestion, as: "questions", order: [["order", "ASC"]] },
-      ],
-    });
-
-    res.json(withQuestions);
-  } catch (err) {
-    await t.rollback();
-    throw err;
-  }
+  const updated = await svcUpdate(id, payload);
+  return res.json(updated);
 };
 
 export const deleteTemplate = async (req, res) => {
   const { id } = req.params;
-  const template = await Template.findByPk(id);
-  if (!template) throw HttpError(404, "Template not found");
+  const existing = await svcGetById(id);
+  if (!existing) throw HttpError(404, "Template not found");
 
   if (req.user.role !== "admin") {
-    if (!req.user.companyId || template.companyId !== req.user.companyId) {
+    if (!req.user.companyId || existing.companyId !== req.user.companyId) {
       throw HttpError(403, "Forbidden");
     }
   }
 
-  await template.update({ archived: true });
-
-  res.status(204).send({ success: true });
+  await svcDelete(id);
+  return res.status(204).send();
 };

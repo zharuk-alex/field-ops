@@ -16,12 +16,12 @@ import companiesRouter from "./routes/companiesRouter.js";
 import templatesRouter from "./routes/templatesRouter.js";
 import questionsRouter from "./routes/questionsRouter.js";
 import locationsRouter from "./routes/locationsRouter.js";
+import auditsRouter from "./routes/auditsRouter.js";
 
 import "./db/models/index.js";
 import sequelize from "./db/Sequelize.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -48,6 +48,7 @@ app.use("/api/companies", companiesRouter);
 app.use("/api/templates", templatesRouter);
 app.use("/api/questions", questionsRouter);
 app.use("/api/locations", locationsRouter);
+app.use("/api/audits", auditsRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });

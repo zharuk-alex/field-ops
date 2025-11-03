@@ -19,6 +19,14 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    firstName: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
     avatarURL: {
       type: DataTypes.STRING,
     },
@@ -39,6 +47,11 @@ const User = sequelize.define(
       type: DataTypes.ENUM("admin", "manager", "auditor"),
       allowNull: false,
       defaultValue: "auditor",
+    },
+    status: {
+      type: DataTypes.ENUM("active", "inactive"),
+      allowNull: false,
+      defaultValue: "active",
     },
     companyId: {
       type: DataTypes.UUID,

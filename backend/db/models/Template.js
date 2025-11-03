@@ -22,10 +22,21 @@ const Template = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    version: {
-      type: DataTypes.INTEGER,
-      defaultValue: 1,
+    status: {
+      type: DataTypes.ENUM("active", "inactive"),
+      defaultValue: "active",
     },
+    questionsIds: {
+      type: DataTypes.ARRAY(DataTypes.UUID),
+      allowNull: false,
+      defaultValue: [],
+    },
+    locationIds: {
+      type: DataTypes.ARRAY(DataTypes.UUID),
+      allowNull: false,
+      defaultValue: [],
+    },
+    meta: { type: DataTypes.JSONB, allowNull: true, defaultValue: null },
     createdBy: {
       type: DataTypes.UUID,
       allowNull: true,

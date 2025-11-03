@@ -84,3 +84,10 @@ export async function findCompanies({
     },
   };
 }
+
+export const updateCompany = async (id, payload) => {
+  const item = await Company.findByPk(id);
+  if (!item) return null;
+  await item.update(payload);
+  return item;
+};

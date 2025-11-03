@@ -1,5 +1,5 @@
 import { QUESTIONS_ALLOWED_SORT } from "#root/constants/index.js";
-import { Question } from "#root/db/models/index.js";
+import { Question, Company } from "#root/db/models/index.js";
 import { Op } from "sequelize";
 const camelToSnakeCase = (str) =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -12,29 +12,78 @@ export const getById = async (id) => {
   return Question.findByPk(id);
 };
 
-export const listQuestions = async ({
-  companyId,
-  status,
+export const findQuestions = async ({
   page = 1,
   limit = 20,
+  sortBy = "createdAt",
+  order = "desc",
   q,
+  companyId,
+  status,
+  debug = false,
 }) => {
+  const pageN = Math.max(1, Number(page));
+  const lim = Math.max(1, Number(limit));
+  const offset = (pageN - 1) * lim;
+
+  const orderDir =
+    String(order || "desc").toUpperCase() === "ASC" ? "ASC" : "DESC";
+  const sort = QUESTIONS_ALLOWED_SORT.includes(sortBy) ? sortBy : "createdAt";
+
   const where = {};
   if (companyId) where.companyId = companyId;
   if (status) where.status = status;
-  if (q) where.questionText = { [Op.iLike]: `%${q}%` };
+  if (q && String(q).trim())
+    where.questionText = { [Op.iLike]: `%${String(q).trim()}%` };
 
-  const offset = (page - 1) * limit;
-  const { rows, count } = await Question.findAndCountAll({
+  const include = [
+    {
+      model: Company,
+      as: "company",
+      attributes: ["id", "name"],
+      required: false,
+    },
+  ];
+
+  let orderClause;
+  if (sort === "companyName") {
+    orderClause = [
+      [{ model: Company, as: "company" }, "name", orderDir],
+      ["createdAt", "DESC"],
+    ];
+  } else {
+    orderClause = [
+      [sort, orderDir],
+      ["createdAt", "DESC"],
+    ];
+  }
+
+  const result = await Question.findAndCountAll({
     where,
-    order: [["createdAt", "DESC"]],
-    limit,
+    include,
+    limit: lim,
     offset,
+    order: orderClause,
+    logging: debug ? console.log : false,
+  });
+
+  console.log("findAndCountAll::result", result);
+
+  const items = result.rows.map((r) => {
+    const plain = r.get ? r.get({ plain: true }) : r;
+    const companyObj = plain.company ?? plain.Company ?? null;
+    plain.companyName = companyObj?.name ?? null;
+    return plain;
   });
 
   return {
-    items: rows,
-    meta: { page, limit, total: count, pages: Math.ceil(count / limit) },
+    items,
+    meta: {
+      total: result.count,
+      page: pageN,
+      limit: lim,
+      pages: Math.ceil(result.count / lim),
+    },
   };
 };
 
@@ -52,61 +101,3 @@ export const setInactive = async (id) => {
   await q.save();
   return q;
 };
-
-export async function findQuestions({
-  page = 1,
-  limit = 10,
-  sortBy = "createdAt",
-  order = "desc",
-  search,
-  companyId,
-  debug = false,
-}) {
-  const pageN = Math.max(1, Number(page) || 1);
-  const lim = Math.max(1, Number(limit) || 10);
-  const offset = (pageN - 1) * lim;
-  const orderDir =
-    String(order || "desc").toLowerCase() === "asc" ? "ASC" : "DESC";
-
-  const sortKey = QUESTIONS_ALLOWED_SORT.includes(sortBy)
-    ? camelToSnakeCase(sortBy)
-    : "createdAt";
-
-  const where = {};
-  if (search && String(search).trim()) {
-    where.questionText = { [Op.iLike]: `%${String(search).trim()}%` };
-  }
-  if (companyId) where.companyId = companyId;
-
-  let orderClause = [[sortKey, orderDir]];
-
-  try {
-    if (debug)
-      console.log(
-        "findQuestions: where=",
-        where,
-        "order=",
-        orderClause,
-        "limit=",
-        lim,
-        "offset=",
-        offset
-      );
-
-    const result = await Question.findAndCountAll({
-      where,
-      limit: lim,
-      offset,
-      order: orderClause,
-      logging: debug ? console.log : false,
-    });
-
-    return {
-      items: result.rows,
-      meta: { total: result.count, page: pageN, limit: lim },
-    };
-  } catch (err) {
-    console.error("findQuestions error", err);
-    throw err;
-  }
-}

@@ -39,10 +39,16 @@ export const listQuestionsQuerySchema = Joi.object({
     .valid(...QUESTION_STATUSES)
     .optional(),
   page: Joi.number().integer().min(1).default(1),
-  limit: Joi.number().integer().min(1).max(100).default(20),
+  limit: Joi.number().integer().min(1).max(200).default(20),
   search: Joi.string().allow("").optional(),
   sortBy: Joi.string()
     .valid(...QUESTIONS_ALLOWED_SORT)
     .default("createdAt"),
   order: Joi.string().lowercase().valid("asc", "desc").default("desc"),
+  all: Joi.boolean()
+    .truthy("1")
+    .truthy("true")
+    .falsy("0")
+    .falsy("false")
+    .default(false),
 }).rename("q", "search", { ignoreUndefined: true, override: true });

@@ -74,3 +74,40 @@ export const listCompanies = async (req, res, next) => {
     next(err);
   }
 };
+
+export const updateCompany = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const payload = {};
+    if (typeof req.body.name !== "undefined") {
+      if (!req.body.name || !String(req.body.name).trim()) {
+        throw HttpError(400, "name is required");
+      }
+      payload.name = String(req.body.name).trim();
+    }
+    if (typeof req.body.description !== "undefined") {
+      payload.description = req.body.description || null;
+    }
+    if (typeof req.body.timezone !== "undefined") {
+      payload.timezone = req.body.timezone || null;
+    }
+    if (typeof req.body.locale !== "undefined") {
+      payload.locale = req.body.locale || null;
+    }
+    if (typeof req.body.meta !== "undefined") {
+      payload.meta = req.body.meta || null;
+    }
+    if (typeof req.body.status !== "undefined") {
+      payload.status = req.body.status;
+    }
+
+    const updated = await companiesService.updateCompany(id, payload);
+    if (!updated) {
+      throw HttpError(404, "Company not found");
+    }
+
+    return res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+};

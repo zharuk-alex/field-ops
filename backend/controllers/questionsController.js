@@ -10,7 +10,12 @@ export const listQuestions = async (req, res, next) => {
       order = "desc",
       search,
       companyId,
+      all,
     } = req.query;
+
+    if (all && (!req.user || req.user.role !== "admin")) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
 
     const result = await questionsService.findQuestions({
       page,

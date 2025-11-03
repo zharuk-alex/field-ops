@@ -1,5 +1,3 @@
-// backend/db/models/index.js
-
 import sequelize from "../Sequelize.js";
 
 import Company from "./Company.js";
@@ -21,10 +19,15 @@ Company.hasMany(Location, { foreignKey: "companyId", as: "locations" });
 Location.belongsTo(Company, { foreignKey: "companyId", as: "company" });
 
 Template.hasMany(TemplateQuestion, {
-  as: "questions",
+  as: "templateQuestions",
   foreignKey: "templateId",
   onDelete: "CASCADE",
+  hooks: true,
 });
+
+Company.hasMany(Template, { foreignKey: "companyId", as: "templates" });
+Template.belongsTo(Company, { foreignKey: "companyId", as: "company" });
+
 TemplateQuestion.belongsTo(Template, {
   foreignKey: "templateId",
   as: "template",
@@ -39,10 +42,27 @@ TemplateQuestion.belongsTo(Question, {
   as: "question",
 });
 
+Company.hasMany(Question, { foreignKey: "companyId", as: "questions" });
+Question.belongsTo(Company, { foreignKey: "companyId", as: "company" });
+
 Template.hasMany(Audit, { foreignKey: "templateId", as: "audits" });
 Audit.belongsTo(Template, { foreignKey: "templateId", as: "template" });
 
-Audit.hasMany(AuditQuestion, { foreignKey: "auditId", as: "items" });
+Company.hasMany(Audit, { foreignKey: "companyId", as: "audits" });
+Audit.belongsTo(Company, { foreignKey: "companyId", as: "company" });
+
+Location.hasMany(Audit, { foreignKey: "locationId", as: "audits" });
+Audit.belongsTo(Location, { foreignKey: "locationId", as: "location" });
+
+User.hasMany(Audit, { foreignKey: "assigneeId", as: "assignedAudits" });
+Audit.belongsTo(User, { foreignKey: "assigneeId", as: "assignee" });
+
+Audit.hasMany(AuditQuestion, {
+  foreignKey: "auditId",
+  as: "items",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 AuditQuestion.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
 
 AuditQuestion.belongsTo(TemplateQuestion, {
@@ -55,19 +75,39 @@ AuditQuestion.belongsTo(Question, {
   as: "question",
 });
 
-AuditQuestion.hasMany(Answer, { foreignKey: "auditQuestionId", as: "answers" });
+AuditQuestion.hasMany(Answer, {
+  foreignKey: "auditQuestionId",
+  as: "answers",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 Answer.belongsTo(AuditQuestion, {
   foreignKey: "auditQuestionId",
   as: "auditQuestion",
 });
 
-Answer.hasMany(Attachment, { foreignKey: "answerId", as: "attachments" });
+Answer.hasMany(Attachment, {
+  foreignKey: "answerId",
+  as: "attachments",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 Attachment.belongsTo(Answer, { foreignKey: "answerId", as: "answer" });
 
-Audit.hasMany(Attachment, { foreignKey: "auditId", as: "attachments" });
+Audit.hasMany(Attachment, {
+  foreignKey: "auditId",
+  as: "attachments",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 Attachment.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
 
-Audit.hasMany(AuditHistory, { foreignKey: "auditId", as: "history" });
+Audit.hasMany(AuditHistory, {
+  foreignKey: "auditId",
+  as: "history",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 AuditHistory.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
 
 export {
