@@ -4,7 +4,6 @@ import Company from "./Company.js";
 import User from "./User.js";
 import Template from "./Template.js";
 import Question from "./Question.js";
-import TemplateQuestion from "./TemplateQuestion.js";
 import Location from "./Location.js";
 import Audit from "./Audit.js";
 import AuditQuestion from "./AuditQuestion.js";
@@ -18,29 +17,8 @@ User.belongsTo(Company, { foreignKey: "companyId", as: "company" });
 Company.hasMany(Location, { foreignKey: "companyId", as: "locations" });
 Location.belongsTo(Company, { foreignKey: "companyId", as: "company" });
 
-Template.hasMany(TemplateQuestion, {
-  as: "templateQuestions",
-  foreignKey: "templateId",
-  onDelete: "CASCADE",
-  hooks: true,
-});
-
 Company.hasMany(Template, { foreignKey: "companyId", as: "templates" });
 Template.belongsTo(Company, { foreignKey: "companyId", as: "company" });
-
-TemplateQuestion.belongsTo(Template, {
-  foreignKey: "templateId",
-  as: "template",
-});
-
-Question.hasMany(TemplateQuestion, {
-  foreignKey: "questionId",
-  as: "templateLinks",
-});
-TemplateQuestion.belongsTo(Question, {
-  foreignKey: "questionId",
-  as: "question",
-});
 
 Company.hasMany(Question, { foreignKey: "companyId", as: "questions" });
 Question.belongsTo(Company, { foreignKey: "companyId", as: "company" });
@@ -64,11 +42,6 @@ Audit.hasMany(AuditQuestion, {
   hooks: true,
 });
 AuditQuestion.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
-
-AuditQuestion.belongsTo(TemplateQuestion, {
-  foreignKey: "templateQuestionId",
-  as: "templateQuestion",
-});
 
 AuditQuestion.belongsTo(Question, {
   foreignKey: "questionId",
@@ -116,7 +89,6 @@ export {
   User,
   Template,
   Question,
-  TemplateQuestion,
   Location,
   Audit,
   AuditQuestion,

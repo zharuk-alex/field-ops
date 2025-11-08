@@ -4,7 +4,26 @@ const routes = [
     alias: ['/home', '/index'],
     component: () => import('@/layouts/MainLayout.vue'),
     children: [
-      { name: 'index', path: '', component: () => import('@/pages/pwa/IndexPage.vue') },
+      {
+        name: 'index',
+        path: '',
+        component: () => import('@/pages/pwa/TemplatesListPage.vue'),
+      },
+      {
+        name: 'audit-perform',
+        path: '/audit/:id',
+        component: () => import('@/pages/pwa/AuditPerformPage.vue'),
+      },
+      {
+        name: 'audits-in-progress',
+        path: '/audits-in-progress',
+        component: () => import('@/pages/pwa/AuditsInProgressPage.vue'),
+        meta: {
+          menu: true,
+          icon: 'mdi-progress-clock',
+          i18n: 'auditsInProgress',
+        },
+      },
       {
         name: 'user_profile',
         path: '/user_profile',

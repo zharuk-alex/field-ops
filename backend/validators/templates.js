@@ -1,3 +1,4 @@
+import { TEMPLATES_ALLOWED_SORT } from "#root/constants/index.js";
 import Joi from "joi";
 
 export const createTemplateSchema = Joi.object({
@@ -22,4 +23,9 @@ export const listTemplatesSchema = Joi.object({
   companyId: Joi.string().uuid().optional(),
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(20),
+  sortBy: Joi.string()
+    .valid(...TEMPLATES_ALLOWED_SORT)
+    .default("createdAt"),
+  order: Joi.string().valid("asc", "desc").default("desc"),
+  search: Joi.string().trim().optional(),
 });

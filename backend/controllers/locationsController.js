@@ -20,12 +20,29 @@ export const createLocation = async (req, res, next) => {
 
 export const listLocations = async (req, res, next) => {
   try {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = "createdAt",
+      order = "desc",
+      search,
+      companyId,
+      all,
+    } = req.query;
     const { error, value } = listLocationsQuerySchema.validate(req.query);
     if (error) return next(HttpError(400, error.message));
 
     if (value.companyId === "") delete value.companyId;
 
-    const result = await locationsService.findLocations(value);
+    const result = await locationsService.findLocations({
+      page,
+      limit,
+      sortBy,
+      order,
+      q: search,
+      companyId,
+      all,
+    });
     return res.json(result);
   } catch (err) {
     next(err);

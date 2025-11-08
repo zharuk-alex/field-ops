@@ -2,7 +2,6 @@ import {
   sequelize,
   Audit,
   AuditQuestion,
-  TemplateQuestion,
   Question,
   Company,
   Location,
@@ -15,7 +14,9 @@ const SORT_MAP = {
   createdAt: ["createdAt"],
   updatedAt: ["updatedAt"],
   status: ["status"],
-  scheduledAt: ["scheduledAt"],
+  scheduledAt: ["startsAt"],
+  startsAt: ["startsAt"],
+  endsAt: ["endsAt"],
   companyName: [{ model: Company, as: "company" }, "name"],
   locationName: [{ model: Location, as: "location" }, "name"],
   templateName: [{ model: Template, as: "template" }, "name"],
@@ -27,39 +28,54 @@ export async function createAudit(payload) {
     const audit = await Audit.create(
       {
         companyId: payload.companyId,
-        locationId: payload.locationId,
-        templateId: payload.templateId,
+        locationId: payload.locationId ?? null,
+        templateId: payload.templateId ?? null,
         assigneeId: payload.assigneeId ?? null,
-        scheduledAt: payload.scheduledAt ?? null,
-        dueAt: payload.dueAt ?? payload.dueDate ?? null,
-        status: payload.status ?? "scheduled",
+        startsAt: payload.startsAt ?? payload.scheduledAt ?? null,
+        endsAt: payload.endsAt ?? payload.dueAt ?? payload.dueDate ?? null,
+        status: payload.status ?? "draft",
         meta: payload.meta ?? null,
       },
       { transaction: t }
     );
 
-    const tplQuestions = await TemplateQuestion.findAll({
-      where: { templateId: payload.templateId },
-      include: [{ model: Question, as: "question" }],
-      order: [
-        ["order", "ASC"],
-        ["createdAt", "ASC"],
-      ],
-      transaction: t,
-    });
+    const template = payload.templateId
+      ? await Template.findByPk(payload.templateId, { transaction: t })
+      : null;
 
-    if (tplQuestions.length) {
-      const items = tplQuestions.map((tplq) => ({
-        auditId: audit.id,
-        templateQuestionId: tplq.id,
-        questionId: tplq.questionId,
-        order: tplq.order ?? 0,
-        status: "pending",
-        meta: tplq.meta ?? null,
-      }));
-      await AuditQuestion.bulkCreate(items, { transaction: t });
+    const qIds = Array.isArray(template?.questionsIds)
+      ? template.questionsIds.filter(Boolean)
+      : [];
+
+    if (qIds.length) {
+      const questions = await Question.findAll({
+        where: { id: { [Op.in]: qIds }, status: "active" },
+        transaction: t,
+      });
+
+      const byId = new Map(questions.map((q) => [q.id, q]));
+
+      const items = qIds
+        .map((qid, idx) => {
+          const q = byId.get(qid);
+          if (!q) return null;
+          return {
+            auditId: audit.id,
+            templateQuestionId: null,
+            questionId: q.id,
+            questionText: q.questionText,
+            type: q.type,
+            choices: q.choices ?? null,
+            order: idx,
+            required: false,
+          };
+        })
+        .filter(Boolean);
+
+      if (items.length) {
+        await AuditQuestion.bulkCreate(items, { transaction: t });
+      }
     }
-
     return audit;
   });
 }
@@ -99,9 +115,9 @@ export async function findAudits({
   if (status) where.status = status;
 
   if (from || to) {
-    where.scheduledAt = {};
-    if (from) where.scheduledAt[Op.gte] = new Date(from);
-    if (to) where.scheduledAt[Op.lte] = new Date(to);
+    where.startsAt = {};
+    if (from) where.startsAt[Op.gte] = new Date(from);
+    if (to) where.startsAt[Op.lte] = new Date(to);
   }
 
   const term = (q ?? search ?? "").toString().trim();
@@ -114,7 +130,11 @@ export async function findAudits({
       attributes: ["id", "name", "address", "lat", "lng"],
     },
     { model: Template, as: "template", attributes: ["id", "name"] },
-    { model: User, as: "assignee", attributes: ["id", "fullName", "email"] },
+    {
+      model: User,
+      as: "assignee",
+      attributes: ["id", "firstName", "lastName", "email"],
+    },
   ];
 
   if (term) {
@@ -177,7 +197,11 @@ export async function getAuditById(id) {
         attributes: ["id", "name", "address", "lat", "lng"],
       },
       { model: Template, as: "template", attributes: ["id", "name"] },
-      { model: User, as: "assignee", attributes: ["id", "fullName", "email"] },
+      {
+        model: User,
+        as: "assignee",
+        attributes: ["id", "firstName", "lastName", "email"],
+      },
       {
         model: AuditQuestion,
         as: "items",

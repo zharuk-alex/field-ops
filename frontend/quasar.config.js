@@ -1,19 +1,19 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
-import { defineConfig } from '#q-app/wrappers'
-import { fileURLToPath } from 'node:url'
-import { config as dotenv } from 'dotenv'
-import path from 'node:path'
+import { defineConfig } from '#q-app/wrappers';
+import { fileURLToPath } from 'node:url';
+import { config as dotenv } from 'dotenv';
+import path from 'node:path';
 
-dotenv({ path: new URL('../env/.env.local', import.meta.url) })
+dotenv({ path: new URL('../env/.env.local', import.meta.url) });
 
-const BUILD_TARGET = process.env.VITE_BUILD_TARGET || 'pwa'
-const API_HOST = process.env.API_HOST || 'localhost'
-const API_PORT = process.env.API_PORT || '3000'
-const API_PROTOCOL = process.env.API_PROTOCOL || 'http'
+const BUILD_TARGET = process.env.VITE_BUILD_TARGET || 'pwa';
+const API_HOST = process.env.API_HOST || 'localhost';
+const API_PORT = process.env.API_PORT || '3000';
+const API_PROTOCOL = process.env.API_PROTOCOL || 'http';
 
-export default defineConfig((ctx) => {
+export default defineConfig(ctx => {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -21,7 +21,7 @@ export default defineConfig((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n', 'axios', 'store'],
+    boot: ['i18n', 'axios', 'store', 'hydrate'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -99,7 +99,8 @@ export default defineConfig((ctx) => {
           'vite-plugin-checker',
           {
             eslint: {
-              lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
+              lintCommand:
+                'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
               useFlatConfig: true,
             },
           },
@@ -135,7 +136,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['AppFullscreen', 'LocalStorage', 'Notify', 'Loading', 'Dialog'],
     },
 
     // animations: 'all', // --- includes all animations
@@ -250,5 +251,5 @@ export default defineConfig((ctx) => {
        */
       extraScripts: [],
     },
-  }
-})
+  };
+});

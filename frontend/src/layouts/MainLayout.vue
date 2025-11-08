@@ -1,30 +1,27 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title>
-          <q-btn stretch flat label="Field Ops" :to="{ name: 'index' }" />
-
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-
+    <AppNavbar @click="toggleLeftDrawer" />
     <AppDrawer v-model:drawer="isAppDrawer" />
 
     <q-page-container>
+      <AppBreadcrumbs />
       <router-view />
     </q-page-container>
+
+    <AppFooter />
   </q-layout>
 </template>
 
 <script setup>
-import AppDrawer from 'src/components/AppDrawer.vue';
-import { ref } from 'vue'
+import AppNavbar from '@/components/AppNavbar.vue';
+import AppBreadcrumbs from '@/components/AppBreadcrumbs.vue';
+import AppDrawer from '@/components/AppDrawer.vue';
+import AppFooter from '@/components/AppFooter.vue';
+import { ref } from 'vue';
 
-const isAppDrawer = ref(false)
+const isAppDrawer = ref(false);
 
 function toggleLeftDrawer() {
-  isAppDrawer.value = !isAppDrawer.value
+  isAppDrawer.value = !isAppDrawer.value;
 }
 </script>

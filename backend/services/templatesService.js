@@ -1,5 +1,10 @@
 import { TEMPLATES_ALLOWED_SORT as ALLOWED_SORT } from "#root/constants/index.js";
-import { Template, Company } from "#root/db/models/index.js";
+import {
+  Template,
+  Company,
+  Question,
+  Location,
+} from "#root/db/models/index.js";
 import { Op } from "sequelize";
 
 export async function createTemplate(payload) {
@@ -16,7 +21,7 @@ export async function createTemplate(payload) {
 }
 
 export async function getTemplateById(id) {
-  return Template.findByPk(id, {
+  const template = await Template.findByPk(id, {
     include: [
       {
         model: Company,
@@ -26,6 +31,44 @@ export async function getTemplateById(id) {
       },
     ],
   });
+
+  if (!template) return null;
+
+  const plain = template.get({ plain: true });
+
+  if (plain.questionsIds && plain.questionsIds.length > 0) {
+    const questions = await Question.findAll({
+      where: {
+        id: { [Op.in]: plain.questionsIds },
+      },
+      attributes: ["id", "questionText", "type", "choices", "status"],
+      order: [["createdAt", "ASC"]],
+    });
+
+    plain.questions = plain.questionsIds
+      .map((qId) => questions.find((q) => q.id === qId))
+      .filter(Boolean);
+  } else {
+    plain.questions = [];
+  }
+
+  if (plain.locationIds && plain.locationIds.length > 0) {
+    const locations = await Location.findAll({
+      where: {
+        id: { [Op.in]: plain.locationIds },
+      },
+      attributes: ["id", "name", "address", "lat", "lng", "status"],
+      order: [["createdAt", "ASC"]],
+    });
+
+    plain.locations = plain.locationIds
+      .map((lId) => locations.find((l) => l.id === lId))
+      .filter(Boolean);
+  } else {
+    plain.locations = [];
+  }
+
+  return plain;
 }
 
 export async function findTemplates({

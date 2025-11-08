@@ -46,6 +46,7 @@ export const listTemplates = async (req, res) => {
   const limit = Number(req.query.limit || 20);
   const sortBy = String(req.query.sortBy || "createdAt");
   const order = String(req.query.order || "desc");
+  const search = req.query.search || undefined;
 
   let companyId = null;
   if (req.user.role === "admin") {
@@ -60,6 +61,7 @@ export const listTemplates = async (req, res) => {
     companyId,
     sortBy,
     order,
+    q: search,
   });
 
   return res.json(result);

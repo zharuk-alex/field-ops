@@ -1,6 +1,7 @@
 export const QUESTION_TYPES = Object.freeze([
   "boolean",
   "choice",
+  "multipleChoice",
   "number",
   "photo",
   "rating",
@@ -12,6 +13,7 @@ export const TEMPLATES_ALLOWED_SORT = Object.freeze([
   "name",
   "status",
   "companyName",
+  "description",
 ]);
 
 export const QUESTION_STATUSES = Object.freeze(["active", "inactive"]);
@@ -49,4 +51,25 @@ export const USERS_ALLOWED_SORT = Object.freeze([
   "role",
   "status",
   "companyName",
+]);
+
+export const AUDITS_ALLOWED_SORT = Object.freeze([
+  "createdAt",
+  "updatedAt",
+  "status",
+  "startsAt",
+  "endsAt",
+  "companyName",
+  "locationName",
+  "templateName",
+  "assigneeName",
+]);
+
+export const AUDITS_STATUS = Object.freeze([
+  "draft",
+  "open",
+  "in_progress",
+  "submitted",
+  "reviewed",
+  "closed",
 ]);

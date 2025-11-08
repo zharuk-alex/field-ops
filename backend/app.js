@@ -17,6 +17,7 @@ import templatesRouter from "./routes/templatesRouter.js";
 import questionsRouter from "./routes/questionsRouter.js";
 import locationsRouter from "./routes/locationsRouter.js";
 import auditsRouter from "./routes/auditsRouter.js";
+import pwaRouter from "./routes/pwaRouter.js";
 
 import "./db/models/index.js";
 import sequelize from "./db/Sequelize.js";
@@ -49,6 +50,7 @@ app.use("/api/templates", templatesRouter);
 app.use("/api/questions", questionsRouter);
 app.use("/api/locations", locationsRouter);
 app.use("/api/audits", auditsRouter);
+app.use("/api/pwa", pwaRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });

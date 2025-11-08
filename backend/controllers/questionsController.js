@@ -22,7 +22,7 @@ export const listQuestions = async (req, res, next) => {
       limit,
       sortBy,
       order,
-      search,
+      q: search,
       companyId,
       debug: true,
     });

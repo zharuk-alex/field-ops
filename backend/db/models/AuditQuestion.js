@@ -16,12 +16,6 @@ const AuditQuestion = sequelize.define(
       references: { model: "audits", key: "id" },
       field: "audit_id",
     },
-    templateQuestionId: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: { model: "template_questions", key: "id" },
-      field: "template_question_id",
-    },
     questionId: {
       type: DataTypes.UUID,
       allowNull: true,
@@ -45,6 +39,11 @@ const AuditQuestion = sequelize.define(
     order: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    required: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {
