@@ -40,6 +40,7 @@ export const createQuestion = async (req, res) => {
     type,
     choices,
     status,
+    required,
   } = req.body;
 
   const companyId =
@@ -58,6 +59,7 @@ export const createQuestion = async (req, res) => {
     type,
     choices,
     status,
+    required,
     createdBy: req.user.id,
   });
 

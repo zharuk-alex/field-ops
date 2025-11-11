@@ -12,22 +12,10 @@
           {{ currentAudit.description }}
         </div>
         <div v-if="currentAudit.location" class="q-mt-sm">
-          <q-chip dense icon="place" color="secondary">
+          <q-chip dense icon="place" color="grey-2">
             {{ currentAudit.location.name }}
           </q-chip>
         </div>
-      </div>
-
-      <q-linear-progress
-        :value="progress / 100"
-        color="positive"
-        class="q-mb-md"
-        size="8px"
-      />
-      <div class="text-center text-caption text-grey-7 q-mb-lg">
-        {{ t('progress') }}: {{ progress }}% ({{ answeredCount }}/{{
-          totalQuestions
-        }})
       </div>
 
       <div class="q-gutter-md">
@@ -41,16 +29,7 @@
               <div class="col">
                 <div class="text-subtitle1 text-weight-medium">
                   {{ index + 1 }}. {{ question.questionText }}
-                  <q-chip
-                    v-if="question.required"
-                    dense
-                    size="sm"
-                    color="red"
-                    text-color="white"
-                    class="q-ml-xs"
-                  >
-                    *
-                  </q-chip>
+                  <span v-if="question.required" class="text-red">*</span>
                 </div>
                 <div class="text-caption text-grey-6">
                   {{ t(`questionType.${question.type}`) }}
@@ -129,43 +108,104 @@
             </div>
 
             <div v-else-if="question.type === 'photo'">
-              <q-file
-                :model-value="answers[question.id]"
-                filled
-                :label="t('selectPhoto')"
-                accept="image/*"
-                @update:model-value="saveAnswer(question.id, $event)"
-              >
-                <template #prepend>
-                  <q-icon name="photo_camera" />
-                </template>
-              </q-file>
+              <div class="row q-gutter-sm items-center">
+                <div
+                  v-for="photo in getQuestionPhotos(question.id)"
+                  :key="photo.id"
+                  class="thumbnail-preview"
+                  @click="openPhoto(photo, question.id)"
+                >
+                  <img :src="photo.thumbBase64" class="thumbnail-image" />
+                </div>
+                <BtnPhotoAdd
+                  :audit-local-id="currentAudit.localId"
+                  :question-id="question.id"
+                  :photos-count="getQuestionPhotos(question.id).length"
+                  :pic-max="50"
+                  icon-only
+                />
+              </div>
             </div>
+          </q-card-section>
+        </q-card>
+
+        <q-card class="q-mt-md">
+          <q-card-section>
+            <q-btn
+              unelevated
+              color="amber"
+              text-color="black"
+              icon="refresh"
+              :label="t('clearAudit')"
+              class="full-width"
+              @click="showClearConfirmDialog = true"
+            />
           </q-card-section>
         </q-card>
       </div>
     </div>
 
-    <Teleport v-if="isMounted" to="#app-footer">
-      <q-btn
-        v-if="currentAudit && !loading"
-        :label="t('submitAudit')"
-        color="primary"
-        size="lg"
-        class="full-width"
-        :disable="!canSubmit"
-        :loading="submitting"
-        @click="submit"
-        unelevated
-      />
+    <q-dialog v-model="showClearConfirmDialog" persistent>
+      <q-card style="min-width: 300px">
+        <q-card-section>
+          <div class="text-h6">{{ t('clearAudit') }}</div>
+        </q-card-section>
+
+        <q-card-section>
+          {{ t('clearAuditConfirmMessage') }}
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat :label="t('cancel')" v-close-popup />
+          <q-btn
+            :label="t('confirm')"
+            color="negative"
+            :loading="clearing"
+            @click="confirmClearAudit"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <RouterView name="photos" />
+
+    <Teleport v-if="isMounted && currentAudit" to="#app-footer">
+      <q-linear-progress :value="progress / 100" color="primary" size="18px">
+        <div class="absolute-full flex flex-center">
+          <q-badge color="white" text-color="grey">
+            {{ t('progress') }}: {{ progress }}% ({{ answeredCount }}/{{
+              totalQuestions
+            }})
+          </q-badge>
+        </div>
+      </q-linear-progress>
+      <div class="flex no-wrap" style="height: 64px">
+        <BtnGallery :photos-count="photosCount" />
+        <q-separator vertical />
+        <BtnPhotoAdd
+          :audit-local-id="currentAudit.localId"
+          :photos-count="photosCount"
+          :pic-max="50"
+        />
+        <q-separator vertical />
+        <BtnSubmit
+          @click="submit"
+          :loading="submitting"
+          :disable="!canSubmit"
+        />
+      </div>
     </Teleport>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
+import { usePhotos } from '@/composable/usePhotos';
+import BtnSubmit from '@/components/pwa/BtnSubmit.vue';
+import BtnGallery from 'src/components/pwa/BtnGallery.vue';
+import BtnPhotoAdd from 'src/components/pwa/BtnPhotoAdd.vue';
 
 const route = useRoute();
 const { $store, t, $router } = useGlobMixin();
@@ -175,18 +215,60 @@ const answers = computed(() => $store.getters['pwaAudits/answers']);
 const progress = computed(() => $store.getters['pwaAudits/progress']);
 const hydrated = computed(() => $store.getters['pwaAudits/hydrated']);
 
+const auditLocalId = computed(() => currentAudit.value?.localId);
+const { photosCount } = usePhotos(auditLocalId);
+
 const submitting = ref(false);
 const loading = ref(true);
 const isMounted = ref(false);
+const showClearConfirmDialog = ref(false);
+const clearing = ref(false);
 
 const questions = computed(() => currentAudit.value?.questions || []);
 const totalQuestions = computed(() => questions.value.length);
 const answeredCount = computed(() => Object.keys(answers.value).length);
 
+const questionPhotosMap = ref(new Map());
+
 const canSubmit = computed(() => {
   const requiredQuestions = questions.value.filter(q => q.required);
   return requiredQuestions.every(q => answers.value[q.id] !== undefined);
 });
+
+watch(
+  [auditLocalId, questions],
+  ([newAuditId, newQuestions]) => {
+    questionPhotosMap.value.clear();
+
+    if (!newAuditId || !newQuestions?.length) return;
+
+    const photoQuestions = newQuestions.filter(q => q.type === 'photo');
+
+    photoQuestions.forEach(question => {
+      const questionIdRef = computed(() => question.id);
+      const { photos } = usePhotos(auditLocalId, questionIdRef);
+      questionPhotosMap.value.set(question.id, photos);
+    });
+  },
+  { immediate: true },
+);
+
+function getQuestionPhotos(questionId) {
+  const photosRef = questionPhotosMap.value.get(questionId);
+  return photosRef?.value || [];
+}
+
+function openPhoto(photo, questionId) {
+  const photos = getQuestionPhotos(questionId);
+  const index = photos.findIndex(p => p.id === photo.id);
+  if (index >= 0) {
+    $router.push({
+      name: 'audit-perform:photos',
+      params: { num: index + 1 },
+      // query: { questionId },
+    });
+  }
+}
 
 function formatChoices(choices) {
   if (Array.isArray(choices)) {
@@ -222,6 +304,68 @@ async function submit() {
     });
   } finally {
     submitting.value = false;
+  }
+}
+
+async function confirmClearAudit() {
+  try {
+    clearing.value = true;
+
+    const templateId = currentAudit.value?.templateId;
+    const locationId = currentAudit.value?.locationId;
+    const localId = currentAudit.value?.localId;
+
+    if (!localId) {
+      throw new Error('No audit localId');
+    }
+
+    await $store.dispatch('pwaAudits/clearAudit', { localId });
+
+    showClearConfirmDialog.value = false;
+
+    $store.dispatch('uiServices/showNotification', {
+      message: t('auditCleared'),
+      color: 'positive',
+    });
+
+    const existingAudit = await $store.dispatch('pwaAudits/findExistingAudit', {
+      templateId,
+      locationId,
+    });
+
+    if (existingAudit) {
+      $router.replace({
+        name: 'audit-perform',
+        params: { id: existingAudit.localId },
+      });
+    } else {
+      const template = await $store.dispatch(
+        'pwaTemplates/getTemplateById',
+        templateId,
+      );
+
+      if (template) {
+        const newAudit = await $store.dispatch('pwaAudits/startAudit', {
+          template,
+          locationId,
+        });
+
+        $router.replace({
+          name: 'audit-perform',
+          params: { id: newAudit.localId },
+        });
+      } else {
+        $router.push({ name: 'index' });
+      }
+    }
+  } catch (err) {
+    console.error('Clear audit error', err);
+    $store.dispatch('uiServices/showNotification', {
+      message: err?.message || t('failedToClearAudit'),
+      color: 'negative',
+    });
+  } finally {
+    clearing.value = false;
   }
 }
 
@@ -292,4 +436,27 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.thumbnail-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition:
+    border-color 0.2s,
+    opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+    border-color: var(--q-primary);
+  }
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+</style>

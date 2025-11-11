@@ -87,5 +87,20 @@ export default {
       commit('setTemplates', []);
       commit('setHydrated', false);
     },
+
+    async getTemplateById({ state }, templateId) {
+      try {
+        let template = state.templates.find(t => t.id === templateId);
+
+        if (!template) {
+          template = await templatesTable.get(templateId);
+        }
+
+        return template || null;
+      } catch (error) {
+        console.error('getTemplateById error', error);
+        return null;
+      }
+    },
   },
 };

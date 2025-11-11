@@ -13,6 +13,18 @@ const routes = [
         name: 'audit-perform',
         path: '/audit/:id',
         component: () => import('@/pages/pwa/AuditPerformPage.vue'),
+        children: [
+          {
+            path: 'photos/:num',
+            name: `audit-perform:photos`,
+            components: {
+              photos: () => import('@/pages/PhotosPage.vue'),
+            },
+            meta: {
+              parentRoute: 'audit-perform',
+            },
+          },
+        ],
       },
       {
         name: 'audits-in-progress',
@@ -51,6 +63,6 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('@/pages/ErrorNotFound.vue'),
   },
-]
+];
 
-export default routes
+export default routes;

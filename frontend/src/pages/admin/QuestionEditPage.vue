@@ -76,7 +76,7 @@
         </div>
 
         <div class="row q-col-gutter-md q-mt-md">
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-4">
             <q-select
               dense
               filled
@@ -88,7 +88,7 @@
             />
           </div>
 
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-4">
             <q-select
               dense
               filled
@@ -97,6 +97,14 @@
               :label="t('company')"
               emit-value
               map-options
+            />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <q-checkbox
+              v-model="form.required"
+              :label="t('required')"
+              dense
             />
           </div>
         </div>
@@ -155,6 +163,7 @@ const form = reactive({
   order: 0,
   status: 'active',
   companyId: $store.getters['auth/companyId'] ?? null,
+  required: false,
 });
 
 function resetForm() {
@@ -164,6 +173,7 @@ function resetForm() {
   form.order = 0;
   form.status = 'active';
   form.companyId = $store.getters['auth/companyId'] ?? null;
+  form.required = false;
 }
 
 async function load() {
@@ -180,6 +190,7 @@ async function load() {
     form.order = data.order ?? 0;
     form.status = data.status || 'active';
     form.companyId = data.companyId || form.companyId;
+    form.required = data.required ?? false;
   } catch (err) {
     console.error('Load question failed', err);
   }
@@ -206,6 +217,7 @@ async function onSubmit() {
     type: form.type,
     status: form.status,
     companyId: form.companyId ?? null,
+    required: form.required ?? false,
   };
 
   if (form.type === 'choice' || form.type === 'multipleChoice') {

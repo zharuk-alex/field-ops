@@ -84,6 +84,8 @@ export default {
   availableTemplates: 'Доступні шаблони',
   noTemplatesAvailable: 'Немає доступних шаблонів',
   selectTemplateToStartAudit: 'Оберіть шаблон для початку аудиту',
+  templatesUpdated: 'Шаблони успішно оновлено',
+  failedToLoadTemplates: 'Не вдалося завантажити шаблони',
   selectLocation: 'Оберіть локацію',
   progress: 'Прогрес',
   submitAudit: 'Відправити аудит',
@@ -108,6 +110,10 @@ export default {
   noAuditsInProgress: 'Немає розпочатих аудитів',
   confirmDeleteAudit: 'Ви впевнені, що хочете видалити цей аудит?',
   auditDeleted: 'Аудит видалено',
+  clearAudit: 'Очистити',
+  clearAuditConfirmMessage: 'Дані аудиту будуть очищені. Ви впевнені?',
+  auditCleared: 'Аудит успішно очищено',
+  failedToClearAudit: 'Не вдалося очистити аудит',
   gps: {
     errors: {
       PERMISSION_DENIED: 'Доступ до геолокації заборонено',
@@ -120,5 +126,14 @@ export default {
     distanceToLocation: 'Відстань до локації',
     currentLocation: 'Поточне місцезнаходження',
     gettingLocation: 'Визначення місцезнаходження...',
+  },
+  photos: {
+    formatNotAllowed: 'Формат {format} не підтримується для файлу {filename}',
+    dateNotAllowed: 'Фото має бути зроблене менше ніж 24 години тому',
+    limitReached: 'Досягнуто максимальну кількість фото',
+    alreadyExist: 'Фото {filename} вже існує',
+    limitUploadReached: 'Можна завантажити максимум {limit} фото за раз',
+    gallery: 'Галерея фото',
+    noPhotos: 'Немає фото',
   },
 };

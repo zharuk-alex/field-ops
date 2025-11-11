@@ -1,6 +1,6 @@
 <template>
   <q-footer id="app-footer-container" elevated class="bg-white text-dark">
-    <q-toolbar class="q-pa-md">
+    <q-toolbar class="q-pa-none">
       <div id="app-footer" class="full-width"></div>
     </q-toolbar>
   </q-footer>

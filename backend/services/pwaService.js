@@ -40,7 +40,7 @@ export async function getAvailableTemplates(userId, companyId) {
       if (plain.questionsIds?.length > 0) {
         const questions = await Question.findAll({
           where: { id: { [Op.in]: plain.questionsIds } },
-          attributes: ["id", "questionText", "type", "choices", "status"],
+          attributes: ["id", "questionText", "type", "choices", "status", "required"],
         });
 
         plain.questions = plain.questionsIds
@@ -137,7 +137,7 @@ export async function saveAudit({
         type: question.type,
         choices: question.choices,
         order: index + 1,
-        required: true,
+        required: question.required ?? false,
       };
     });
 

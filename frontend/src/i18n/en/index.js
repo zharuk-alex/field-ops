@@ -84,6 +84,8 @@ export default {
   availableTemplates: 'Available Templates',
   noTemplatesAvailable: 'No templates available',
   selectTemplateToStartAudit: 'Select a template to start an audit',
+  templatesUpdated: 'Templates updated successfully',
+  failedToLoadTemplates: 'Failed to load templates',
   selectLocation: 'Select Location',
   progress: 'Progress',
   submitAudit: 'Submit Audit',
@@ -108,6 +110,10 @@ export default {
   noAuditsInProgress: 'No audits in progress',
   confirmDeleteAudit: 'Are you sure you want to delete this audit?',
   auditDeleted: 'Audit deleted',
+  clearAudit: 'Clear',
+  clearAuditConfirmMessage: 'Audit data will be cleared. Are you sure?',
+  auditCleared: 'Audit cleared successfully',
+  failedToClearAudit: 'Failed to clear audit',
   gps: {
     errors: {
       PERMISSION_DENIED: 'Geolocation access denied',
@@ -120,5 +126,14 @@ export default {
     distanceToLocation: 'Distance to location',
     currentLocation: 'Current location',
     gettingLocation: 'Getting location...',
+  },
+  photos: {
+    formatNotAllowed: 'Format {format} not allowed for file {filename}',
+    dateNotAllowed: 'Photo must be taken within the last 24 hours',
+    limitReached: 'Maximum number of photos reached',
+    alreadyExist: 'Photo {filename} already exists',
+    limitUploadReached: 'You can upload maximum {limit} photos at once',
+    gallery: 'Photo Gallery',
+    noPhotos: 'No photos',
   },
 };

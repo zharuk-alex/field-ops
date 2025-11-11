@@ -1,2 +1,3 @@
-export * from './helpers'
-export * from './datetime'
+export * from './datetime';
+export * from './image';
+export * from './formatters';

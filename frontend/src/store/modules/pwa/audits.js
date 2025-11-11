@@ -1,6 +1,6 @@
 import { api } from '@/boot/axios';
 import { uid } from 'quasar';
-import { auditsDataTable } from '@/boot/db';
+import { auditsDataTable, photosTable } from '@/boot/db';
 
 export default {
   namespaced: true,
@@ -235,6 +235,17 @@ export default {
     async clearAuditData({ commit }) {
       await auditsDataTable.clear();
       commit('clearCurrentAudit');
+    },
+
+    async clearAudit({ commit }, { localId }) {
+      try {
+        await photosTable.where('auditLocalId').equals(localId).delete();
+        await auditsDataTable.delete(localId);
+        commit('clearCurrentAudit');
+      } catch (error) {
+        console.error('clearAudit error', error);
+        throw error;
+      }
     },
   },
 };

@@ -35,6 +35,11 @@ const Question = sequelize.define(
       allowNull: false,
       defaultValue: "active",
     },
+    required: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     createdBy: {
       type: DataTypes.UUID,
       allowNull: true,

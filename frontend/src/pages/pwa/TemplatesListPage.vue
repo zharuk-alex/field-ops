@@ -153,6 +153,16 @@
         @cancel="handleLocationCancel"
       />
     </q-pull-to-refresh>
+
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn
+        fab
+        icon="sync"
+        color="primary"
+        :loading="syncing"
+        @click="syncTemplates"
+      />
+    </q-page-sticky>
   </q-page>
 </template>
 
@@ -177,6 +187,7 @@ const locationForConfirm = ref(null);
 const templateForStart = ref(null);
 const locationIdForStart = ref(null);
 const gpsDataForStart = ref(null);
+const syncing = ref(false);
 
 const locationOptions = computed(() => {
   if (!selectedTemplate.value?.locations?.length) return [];
@@ -252,6 +263,25 @@ async function onRefresh(done) {
     });
   } finally {
     done();
+  }
+}
+
+async function syncTemplates() {
+  try {
+    syncing.value = true;
+    await $store.dispatch('pwaTemplates/getTemplates', { forceRefresh: true });
+    $store.dispatch('uiServices/showNotification', {
+      message: t('templatesUpdated'),
+      color: 'positive',
+    });
+  } catch (err) {
+    console.error('Sync templates error', err);
+    $store.dispatch('uiServices/showNotification', {
+      message: t('failedToLoadTemplates'),
+      color: 'negative',
+    });
+  } finally {
+    syncing.value = false;
   }
 }
 

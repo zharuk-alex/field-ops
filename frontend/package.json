@@ -21,6 +21,7 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
+    "crypto-js": "^4.2.0",
     "dexie": "^4.2.1",
     "haversine-distance": "^1.2.4",
     "quasar": "^2.16.0",

@@ -19,6 +19,7 @@ export const createQuestionSchema = Joi.object({
   status: Joi.string()
     .valid(...QUESTION_STATUSES)
     .default("active"),
+  required: Joi.boolean().default(false),
 });
 
 export const updateQuestionSchema = Joi.object({
@@ -31,6 +32,7 @@ export const updateQuestionSchema = Joi.object({
   status: Joi.string()
     .valid(...QUESTION_STATUSES)
     .optional(),
+  required: Joi.boolean().optional(),
 });
 
 export const listQuestionsQuerySchema = Joi.object({
