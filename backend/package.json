@@ -5,7 +5,10 @@
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
     "dev:local": "DOTENV_PATH=../env/.env.local nodemon app.js",
-    "dev:render": "DOTENV_PATH=../env/.env.render nodemon app.js"
+    "dev:render": "DOTENV_PATH=../env/.env.render nodemon app.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo:all",
+    "seed": "npx sequelize-cli db:seed:all"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
