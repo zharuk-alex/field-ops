@@ -220,6 +220,33 @@ export default {
           localId: state.currentAudit.localId,
         });
 
+        const auditId = result.data.id;
+        if (auditId) {
+          try {
+            const { usePhotoSync } = await import('@/composable/usePhotoSync');
+            const { syncAuditPhotos } = usePhotoSync();
+
+            const answerMapping = {};
+            if (result.data.items) {
+              result.data.items.forEach(item => {
+                answerMapping[item.questionId] = item.id;
+              });
+            }
+
+            await syncAuditPhotos(
+              state.currentAudit.localId,
+              auditId,
+              answerMapping,
+            );
+          } catch (photoError) {
+            console.error('Failed to sync photos:', photoError);
+          }
+        }
+
+        await photosTable
+          .where('auditLocalId')
+          .equals(state.currentAudit.localId)
+          .delete();
         await auditsDataTable.delete(state.currentAudit.localId);
 
         commit('clearCurrentAudit');

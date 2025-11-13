@@ -10,6 +10,7 @@ import AuditQuestion from "./AuditQuestion.js";
 import Answer from "./Answer.js";
 import Attachment from "./Attachment.js";
 import AuditHistory from "./AuditHistory.js";
+import Photo from "./Photo.js";
 
 Company.hasMany(User, { foreignKey: "companyId", as: "users" });
 User.belongsTo(Company, { foreignKey: "companyId", as: "company" });
@@ -83,6 +84,25 @@ Audit.hasMany(AuditHistory, {
 });
 AuditHistory.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
 
+Audit.hasMany(Photo, {
+  foreignKey: "auditId",
+  as: "photos",
+  onDelete: "CASCADE",
+  hooks: true,
+});
+Photo.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
+
+Answer.hasMany(Photo, {
+  foreignKey: "answerId",
+  as: "photos",
+  onDelete: "CASCADE",
+  hooks: true,
+});
+Photo.belongsTo(Answer, { foreignKey: "answerId", as: "answer" });
+
+User.hasMany(Photo, { foreignKey: "userId", as: "photos" });
+Photo.belongsTo(User, { foreignKey: "userId", as: "user" });
+
 export {
   sequelize,
   Company,
@@ -95,4 +115,5 @@ export {
   Answer,
   Attachment,
   AuditHistory,
+  Photo,
 };
