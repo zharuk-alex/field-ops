@@ -1,34 +1,30 @@
 export default {
   path: '/audits',
-  name: 'audits',
-  component: () => import('@/layouts/ListAndCrudLayout.vue'),
+  name: 'admin:audits',
+  redirect: { name: 'admin:audits:list' },
   meta: {
     title: 'Audits',
-    i18n: 'audit',
-    userRole: 'admin',
-    // menu: true,
-    menu: false,
+    i18n: 'audits',
+    userRole: ['admin', 'manager'],
+    menu: true,
   },
   children: [
     {
       path: '',
-      name: 'audits-list',
-      components: {
-        list: () => import('@/components/admin/AuditsList.vue'),
+      name: 'admin:audits:list',
+      component: () => import('@/pages/admin/Audits/AuditsListPage.vue'),
+      meta: {
+        title: 'Audits List',
+        i18n: 'audits',
       },
     },
     {
-      path: 'new',
-      name: 'audit-create',
-      components: {
-        new: () => import('@/pages/admin/Audits/AuditEditPage.vue'),
-      },
-    },
-    {
-      path: ':id',
-      name: 'audit-view',
-      components: {
-        view: () => import('@/pages/admin/Audits/AuditViewPage.vue'),
+      path: ':id(.*)',
+      name: 'admin:audit:view',
+      component: () => import('@/pages/admin/Audits/AuditDetailPage.vue'),
+      meta: {
+        title: 'Audit Details',
+        i18n: 'auditDetails',
       },
     },
   ],

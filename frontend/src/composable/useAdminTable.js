@@ -89,8 +89,8 @@ export function useAdminTable(config) {
   }
 
   const clickRow = (evt, row) => {
-    if (editRouteName) {
-      $router.push({ name: editRouteName, params: { id: row.id } });
+    if (editRouteName && row.id) {
+      $router.push({ name: editRouteName, params: { id: String(row.id) } });
     }
   };
 

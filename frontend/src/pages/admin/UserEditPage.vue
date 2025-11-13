@@ -3,63 +3,84 @@
     <q-card-section>
       <div class="text-h6">
         {{
-          isNew
-            ? t('create') + ' ' + t('location')
-            : t('edit') + ' ' + t('location')
+          isNew ? t('create') + ' ' + t('user') : t('edit') + ' ' + t('user')
         }}
       </div>
     </q-card-section>
 
     <q-form @submit.prevent="onSubmit" greedy class="q-gutter-md">
-      <q-card-section>
-        <q-input
-          dense
-          filled
-          v-model="form.name"
-          :label="t('name')"
-          :rules="[val => !!val || t('form.requiredField')]"
-        />
-
-        <q-input
-          dense
-          filled
-          v-model="form.address"
-          :label="t('address')"
-          class="q-mb-md"
-        />
-
+      <q-card-section class="q-gutter-y-md">
         <div class="row q-col-gutter-md">
-          <div class="col-6 col-md-3">
+          <div class="col-12 col-md-6">
             <q-input
               dense
               filled
-              v-model.number="form.lat"
-              type="number"
-              :label="t('lat')"
+              v-model="form.firstName"
+              :label="t('firstName')"
+              :rules="[val => !!val || t('form.requiredField')]"
+            />
+          </div>
+          <div class="col-12 col-md-6">
+            <q-input
+              dense
+              filled
+              v-model="form.lastName"
+              :label="t('lastName')"
+              :rules="[val => !!val || t('form.requiredField')]"
+            />
+          </div>
+        </div>
+        <div class="row q-col-gutter-md">
+          <div class="col-12 col-md-6">
+            <q-input
+              dense
+              filled
+              v-model="form.email"
+              type="email"
+              :label="t('email')"
               :rules="[
-                val =>
-                  val === '' ||
-                  val === null ||
-                  !isNaN(val) ||
-                  t('form.notNegativeVal'),
+                val => !!val || t('form.requiredField'),
+                val => /.+@.+\..+/.test(val) || t('form.emailRule'),
               ]"
             />
           </div>
-
-          <div class="col-6 col-md-3">
+          <div class="col-12 col-md-6">
             <q-input
+              v-if="isNew"
               dense
               filled
-              v-model.number="form.lng"
-              type="number"
-              :label="t('lng')"
+              v-model="form.password"
+              type="password"
+              :label="t('password')"
               :rules="[
-                val =>
-                  val === '' ||
-                  val === null ||
-                  !isNaN(val) ||
-                  t('form.notNegativeVal'),
+                val => !!val || t('form.requiredField'),
+                val => val.length >= 6 || t('form.minCharsHint', { len: 6 }),
               ]"
+            />
+
+            <q-input
+              v-else
+              dense
+              filled
+              v-model="form.password"
+              type="password"
+              :label="t('password') + ' (' + t('optional') + ')'"
+              :hint="t('leaveEmptyToKeepCurrent')"
+            />
+          </div>
+        </div>
+
+        <div class="row q-col-gutter-md">
+          <div class="col-12 col-md-6">
+            <q-select
+              dense
+              filled
+              v-model="form.role"
+              :options="roleOptions"
+              :label="t('role')"
+              emit-value
+              map-options
+              :rules="[val => !!val || t('form.requiredField')]"
             />
           </div>
 
@@ -73,20 +94,22 @@
               emit-value
               map-options
               clearable
+              :hint="t('requiredForNonAdminRoles')"
             />
           </div>
         </div>
+        <div class="row q-col-gutter-md">
+          <div class="col-12 col-md-6">
+            <q-input
+              dense
+              filled
+              v-model="metaText"
+              type="textarea"
+              :label="t('meta')"
+              hint="JSON object (optional)"
+            />
+          </div>
 
-        <q-input
-          dense
-          filled
-          v-model="metaText"
-          type="textarea"
-          :label="t('meta')"
-          hint="JSON object (optional)"
-        />
-
-        <div class="row q-col-gutter-md q-mt-md items-center">
           <div class="col-12 col-md-6">
             <q-select
               dense
@@ -98,20 +121,20 @@
               map-options
             />
           </div>
-
-          <div class="col-12 col-md-6 text-right">
-            <q-btn flat label="Cancel" @click="onCancel" />
-            <q-btn
-              class="q-ml-sm"
-              label="Save"
-              color="primary"
-              :loading="saving"
-              type="submit"
-              unelevated
-            />
-          </div>
         </div>
       </q-card-section>
+      <q-card-actions align="center">
+        <q-space />
+        <q-btn flat :label="t('cancel')" @click="onCancel" />
+        <q-btn
+          class="q-ml-sm"
+          :label="t('save')"
+          color="primary"
+          :loading="saving"
+          type="submit"
+          unelevated
+        />
+      </q-card-actions>
     </q-form>
   </q-card>
 </template>
@@ -126,8 +149,10 @@ const id = computed(() => $route.params.id || null);
 const isNew = computed(() => !id.value);
 
 const saving = ref(false);
-
 const metaText = ref('');
+
+const ROLES = ['admin', 'manager', 'user'];
+const roleOptions = ROLES.map(v => ({ label: t(v), value: v }));
 
 const STATUS = ['active', 'inactive'];
 const statusOptions = STATUS.map(v => ({ label: t(v), value: v }));
@@ -142,24 +167,26 @@ const companyOptions = computed(() =>
 );
 
 const form = reactive({
-  name: '',
-  address: '',
-  lat: null,
-  lng: null,
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  role: 'user',
+  companyId: null,
   meta: null,
   status: 'active',
-  companyId: $store.getters['auth/companyId'] ?? null,
 });
 
 function resetForm() {
-  form.name = '';
-  form.address = '';
-  form.lat = null;
-  form.lng = null;
+  form.firstName = '';
+  form.lastName = '';
+  form.email = '';
+  form.password = '';
+  form.role = 'user';
+  form.companyId = null;
   form.meta = null;
   metaText.value = '';
   form.status = 'active';
-  form.companyId = $store.getters['auth/companyId'] ?? null;
 }
 
 async function loadCompanies() {
@@ -179,18 +206,19 @@ async function load() {
     return;
   }
   try {
-    const res = await $store.dispatch('adminLocations/getLocation', id.value);
+    const res = await $store.dispatch('adminUsers/getUser', id.value);
     const data = res.data || {};
-    form.name = data.name || '';
-    form.address = data.address || '';
-    form.lat = data.lat ?? null;
-    form.lng = data.lng ?? null;
+    form.firstName = data.firstName || '';
+    form.lastName = data.lastName || '';
+    form.email = data.email || '';
+    form.password = '';
+    form.role = data.role || 'user';
+    form.companyId = data.companyId || null;
     form.status = data.status || 'active';
-    form.companyId = data.companyId || form.companyId;
     form.meta = data.meta ?? null;
     metaText.value = form.meta ? JSON.stringify(form.meta, null, 2) : '';
   } catch (err) {
-    console.error('Load location failed', err);
+    console.error('Load user failed', err);
   }
 }
 
@@ -221,33 +249,38 @@ async function onSubmit() {
   }
 
   const payload = {
-    name: form.name,
-    address: form.address || null,
-    lat: form.lat === '' ? null : form.lat,
-    lng: form.lng === '' ? null : form.lng,
+    firstName: form.firstName,
+    lastName: form.lastName,
+    email: form.email,
+    role: form.role,
+    companyId: form.companyId || null,
     meta: form.meta,
     status: form.status,
-    companyId: form.companyId || null,
   };
+
+  // Only include password if it's set
+  if (isNew.value || form.password) {
+    payload.password = form.password;
+  }
 
   saving.value = true;
   try {
     if (isNew.value) {
-      const res = await $store.dispatch('adminLocations/createLocation', {
+      const res = await $store.dispatch('adminUsers/createUser', {
         form: payload,
       });
       const created = res?.data ?? null;
       if (created?.id) {
-        $router.push({ name: 'locations-list' });
+        $router.push({ name: 'users-list' });
       } else {
-        throw new Error('Location not created');
+        throw new Error('User not created');
       }
     } else {
-      await $store.dispatch('adminLocations/updateLocation', {
+      await $store.dispatch('adminUsers/updateUser', {
         id: id.value,
         form: payload,
       });
-      $router.push({ name: 'locations-list' });
+      $router.push({ name: 'users-list' });
     }
   } catch (err) {
     console.error('Save error', err);

@@ -65,6 +65,11 @@ const isValidTimeFormat = (timeString) => {
   return timeRegex.test(timeString)
 }
 
+const formatDateTime = (timestamp, format = 'YYYY-MM-DD HH:mm') => {
+  if (!timestamp) return ''
+  return date.formatDate(timestamp, format)
+}
+
 export {
   formatTimestamp,
   msToHumanTime,
@@ -74,4 +79,5 @@ export {
   msToTime,
   daysBetweenDates,
   isValidTimeFormat,
+  formatDateTime,
 }

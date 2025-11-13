@@ -5,6 +5,7 @@ import {
   Question,
   Location,
   Company,
+  Answer,
 } from "#root/db/models/index.js";
 import { Op } from "sequelize";
 import HttpError from "../helpers/HttpError.js";
@@ -149,8 +150,6 @@ export async function saveAudit({
       });
 
       if (answers && answers.length > 0) {
-        const Answer = (await import("#root/db/models/index.js")).Answer;
-
         const answerRecords = answers
           .map((ans) => {
             const auditQuestion = createdQuestions.find(
@@ -183,6 +182,13 @@ export async function saveAudit({
         as: "items",
         separate: true,
         order: [["order", "ASC"]],
+        include: [
+          {
+            model: Answer,
+            as: "answers",
+            attributes: ["id", "value", "comment", "userId"],
+          },
+        ],
       },
       {
         model: Location,

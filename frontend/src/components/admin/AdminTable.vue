@@ -32,17 +32,9 @@
       <template
         v-for="slot in customBodyCellSlots"
         :key="slot"
-        v-slot:[`body-cell-${slot}`]="props"
+        v-slot:[`body-cell-${slot}`]="slotProps"
       >
-        <slot :name="`body-cell-${slot}`" :props="props"></slot>
-      </template>
-
-      <template
-        v-for="(_, name) in $slots"
-        :key="name"
-        v-slot:[name]="slotData"
-      >
-        <slot :name="name" v-bind="slotData"></slot>
+        <slot :name="`body-cell-${slot}`" :props="slotProps"></slot>
       </template>
     </q-table>
 

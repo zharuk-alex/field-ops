@@ -229,7 +229,9 @@ export default {
             const answerMapping = {};
             if (result.data.items) {
               result.data.items.forEach(item => {
-                answerMapping[item.questionId] = item.id;
+                if (item.answers && item.answers.length > 0) {
+                  answerMapping[item.questionId] = item.answers[0].id;
+                }
               });
             }
 

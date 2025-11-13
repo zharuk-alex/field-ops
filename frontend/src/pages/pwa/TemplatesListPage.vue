@@ -1,13 +1,6 @@
 <template>
   <q-page padding>
     <q-pull-to-refresh @refresh="onRefresh">
-      <div class="q-mb-md">
-        <div class="text-h5 q-mb-sm">{{ t('availableTemplates') }}</div>
-        <div class="text-caption text-grey-7">
-          {{ t('selectTemplateToStartAudit') }}
-        </div>
-      </div>
-
       <q-linear-progress v-if="loading" indeterminate color="primary" />
 
       <div

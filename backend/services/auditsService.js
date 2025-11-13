@@ -7,6 +7,8 @@ import {
   Location,
   Template,
   User,
+  Answer,
+  Photo,
 } from "../db/models/index.js";
 import { Op } from "sequelize";
 
@@ -211,12 +213,49 @@ export async function getAuditById(id) {
             as: "question",
             attributes: ["id", "type", "questionText"],
           },
+          {
+            model: Answer,
+            as: "answers",
+            attributes: ["id", "userId", "value", "comment", "createdAt"],
+            include: [
+              {
+                model: Photo,
+                as: "photos",
+                attributes: [
+                  "id",
+                  "url",
+                  "thumbnailUrl",
+                  "format",
+                  "width",
+                  "height",
+                  "bytes",
+                  "createdAt",
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: Photo,
+        as: "photos",
+        attributes: [
+          "id",
+          "url",
+          "thumbnailUrl",
+          "format",
+          "width",
+          "height",
+          "bytes",
+          "answerId",
+          "createdAt",
         ],
       },
     ],
     order: [
       [{ model: AuditQuestion, as: "items" }, "order", "ASC"],
       [{ model: AuditQuestion, as: "items" }, "createdAt", "ASC"],
+      [{ model: Photo, as: "photos" }, "createdAt", "ASC"],
     ],
   });
 }
