@@ -28,8 +28,16 @@ export const submitAudit = async (req, res) => {
   const userId = req.user?.id;
   const companyId = req.user?.companyId;
   const userRole = req.user?.role;
-  const { templateId, locationId, answers, startedAt, completedAt, localId } =
-    req.body;
+  const {
+    templateId,
+    locationId,
+    answers,
+    startedAt,
+    completedAt,
+    localId,
+    startLocation,
+    endLocation,
+  } = req.body;
 
   if (!userId) {
     throw HttpError(401, "User not authenticated");
@@ -60,6 +68,8 @@ export const submitAudit = async (req, res) => {
     userId,
     companyId,
     userRole,
+    startLocation,
+    endLocation,
   });
 
   return res.status(201).json(audit);

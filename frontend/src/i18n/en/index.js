@@ -33,7 +33,7 @@ export default {
   notSended: 'Not sended',
   successUpdated: 'Updated successfully',
   toSort: 'Sorting',
-  сonfirm: 'Confirm',
+  confirm: 'Confirm',
   cancel: 'Cancel',
   retry: 'Retry',
   information: 'information',
@@ -120,6 +120,11 @@ export default {
   clearAuditConfirmMessage: 'Audit data will be cleared. Are you sure?',
   auditCleared: 'Audit cleared successfully',
   failedToClearAudit: 'Failed to clear audit',
+  setStartLocation: 'Set Start Location',
+  setEndLocation: 'Set End Location',
+  startLocationSaved: 'Start location saved successfully',
+  failedToSaveStartLocation: 'Failed to save start location',
+  failedToSaveEndLocation: 'Failed to save end location',
   gps: {
     errors: {
       PERMISSION_DENIED: 'Geolocation access denied',
@@ -152,6 +157,8 @@ export default {
   noAnswer: 'No answer',
   comment: 'Comment',
   assignee: 'Assignee',
+  startLocationRadius: 'Start Location Radius',
+  endLocationRadius: 'End Location Radius',
   startedAt: 'Started At',
   completedAt: 'Completed At',
   createdAt: 'Created At',
@@ -169,4 +176,17 @@ export default {
     completed: 'Completed',
     cancelled: 'Cancelled',
   },
+  memberSince: 'Member Since',
+  failedToLoadProfile: 'Failed to load profile',
+  userRole: {
+    admin: 'Admin',
+    manager: 'Manager',
+    auditor: 'Auditor',
+  },
+  userStatus: {
+    active: 'Active',
+    inactive: 'Inactive',
+  },
+  appearance: 'Appearance',
+  theme: 'Theme',
 };

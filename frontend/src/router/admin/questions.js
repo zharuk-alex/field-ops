@@ -13,21 +13,21 @@ export default {
       path: '',
       name: 'questions-list',
       components: {
-        list: () => import('@/components/admin/QuestionsList.vue'),
+        list: () => import('src/pages/admin/Questions/QuestionsList.vue'),
       },
     },
     {
       path: 'new',
       name: 'question-create',
       components: {
-        new: () => import('src/pages/admin/QuestionEditPage.vue'),
+        new: () => import('src/pages/admin/Questions/QuestionEditPage.vue'),
       },
     },
     {
       path: ':id',
       name: 'question-edit',
       components: {
-        edit: () => import('src/pages/admin/QuestionEditPage.vue'),
+        edit: () => import('src/pages/admin/Questions/QuestionEditPage.vue'),
       },
     },
   ],

@@ -33,7 +33,7 @@ export default {
   password: 'Пароль',
   notSended: 'Не відправлено',
   toSort: 'Сортувати',
-  сonfirm: 'Підтвердити',
+  confirm: 'Підтвердити',
   cancel: 'Скасувати',
   retry: 'Повторити',
   information: 'інформація',
@@ -120,6 +120,11 @@ export default {
   clearAuditConfirmMessage: 'Дані аудиту будуть очищені. Ви впевнені?',
   auditCleared: 'Аудит успішно очищено',
   failedToClearAudit: 'Не вдалося очистити аудит',
+  setStartLocation: 'Встановити GPS старту',
+  setEndLocation: 'Встановити GPS завершення',
+  startLocationSaved: 'GPS старту успішно збережено',
+  failedToSaveStartLocation: 'Не вдалося зберегти GPS старту',
+  failedToSaveEndLocation: 'Не вдалося зберегти GPS завершення',
   gps: {
     errors: {
       PERMISSION_DENIED: 'Доступ до геолокації заборонено',
@@ -152,6 +157,8 @@ export default {
   noAnswer: 'Немає відповіді',
   comment: 'Коментар',
   assignee: 'Виконавець',
+  startLocationRadius: 'Радіус на початку',
+  endLocationRadius: 'Радіус при завершенні',
   startedAt: 'Розпочато',
   completedAt: 'Завершено',
   createdAt: 'Створено',
@@ -169,4 +176,17 @@ export default {
     completed: 'Завершено',
     cancelled: 'Скасовано',
   },
+  memberSince: 'Користувач з',
+  failedToLoadProfile: 'Не вдалося завантажити профіль',
+  userRole: {
+    admin: 'Адмін',
+    manager: 'Менеджер',
+    auditor: 'Аудитор',
+  },
+  userStatus: {
+    active: 'Активний',
+    inactive: 'Неактивний',
+  },
+  appearance: 'Зовнішній вигляд',
+  theme: 'Тема',
 };

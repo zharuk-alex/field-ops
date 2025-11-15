@@ -79,6 +79,8 @@ export async function saveAudit({
   userId,
   companyId,
   userRole,
+  startLocation,
+  endLocation,
 }) {
   const template = await Template.findByPk(templateId);
 
@@ -106,6 +108,17 @@ export async function saveAudit({
     }
   }
 
+  const meta = {};
+  if (localId) {
+    meta.localId = localId;
+  }
+  if (startLocation) {
+    meta.startLocation = startLocation;
+  }
+  if (endLocation) {
+    meta.endLocation = endLocation;
+  }
+
   const audit = await Audit.create({
     templateId,
     companyId: auditCompanyId,
@@ -117,7 +130,7 @@ export async function saveAudit({
     createdBy: userId,
     startsAt: startedAt || new Date(),
     endsAt: completedAt || new Date(),
-    meta: localId ? { localId } : null,
+    meta: Object.keys(meta).length > 0 ? meta : null,
   });
 
   if (template.questionsIds?.length > 0) {

@@ -5,7 +5,7 @@
       <div class="q-mt-md text-grey-7">{{ t('loadingAudit') }}</div>
     </div>
 
-    <div v-else>
+    <div v-else class="flex column">
       <div class="q-mb-md">
         <div class="text-h5">{{ currentAudit.name }}</div>
         <div v-if="currentAudit.description" class="text-caption text-grey-7">
@@ -37,112 +37,101 @@
               </div>
             </div>
 
-            <div v-if="question.type === 'boolean'">
-              <q-btn-toggle
-                :model-value="answers[question.id]"
-                :options="[
-                  { label: t('yes'), value: true },
-                  { label: t('no'), value: false },
-                ]"
-                toggle-color="primary"
-                @update:model-value="saveAnswer(question.id, $event)"
-              />
-            </div>
+            <q-btn-toggle
+              v-if="question.type === 'boolean'"
+              :model-value="answers[question.id]"
+              :options="[
+                { label: t('yes'), value: true },
+                { label: t('no'), value: false },
+              ]"
+              toggle-color="primary"
+              @update:model-value="saveAnswer(question.id, $event)"
+            />
 
-            <div v-else-if="question.type === 'choice' && question.choices">
-              <q-option-group
-                :model-value="answers[question.id]"
-                :options="formatChoices(question.choices)"
-                type="radio"
-                @update:model-value="saveAnswer(question.id, $event)"
-              />
-            </div>
+            <q-option-group
+              v-else-if="question.type === 'choice' && question.choices"
+              :model-value="answers[question.id]"
+              :options="formatChoices(question.choices)"
+              type="radio"
+              @update:model-value="saveAnswer(question.id, $event)"
+            />
+
+            <q-select
+              v-else-if="question.type === 'multipleChoice' && question.choices"
+              :model-value="answers[question.id]"
+              :options="formatChoices(question.choices)"
+              multiple
+              filled
+              :label="t('selectOptions')"
+              emit-value
+              map-options
+              use-chips
+              @update:model-value="saveAnswer(question.id, $event)"
+            />
+
+            <q-input
+              v-else-if="question.type === 'number'"
+              :model-value="answers[question.id]"
+              type="number"
+              filled
+              :label="t('enterNumber')"
+              @update:model-value="saveAnswer(question.id, $event)"
+            />
+
+            <q-rating
+              v-else-if="question.type === 'rating'"
+              :model-value="answers[question.id]"
+              size="2em"
+              color="orange"
+              icon="star_border"
+              icon-selected="star"
+              :max="5"
+              @update:model-value="saveAnswer(question.id, $event)"
+            />
+
+            <q-input
+              v-else-if="question.type === 'text'"
+              :model-value="answers[question.id]"
+              filled
+              type="textarea"
+              :label="t('enterText')"
+              rows="3"
+              @update:model-value="saveAnswer(question.id, $event)"
+            />
 
             <div
-              v-else-if="question.type === 'multipleChoice' && question.choices"
+              v-else-if="question.type === 'photo'"
+              class="row q-gutter-sm items-center"
             >
-              <q-select
-                :model-value="answers[question.id]"
-                :options="formatChoices(question.choices)"
-                multiple
-                filled
-                :label="t('selectOptions')"
-                emit-value
-                map-options
-                use-chips
-                @update:model-value="saveAnswer(question.id, $event)"
-              />
-            </div>
-
-            <div v-else-if="question.type === 'number'">
-              <q-input
-                :model-value="answers[question.id]"
-                type="number"
-                filled
-                :label="t('enterNumber')"
-                @update:model-value="saveAnswer(question.id, $event)"
-              />
-            </div>
-
-            <div v-else-if="question.type === 'rating'">
-              <q-rating
-                :model-value="answers[question.id]"
-                size="2em"
-                color="orange"
-                icon="star_border"
-                icon-selected="star"
-                :max="5"
-                @update:model-value="saveAnswer(question.id, $event)"
-              />
-            </div>
-
-            <div v-else-if="question.type === 'text'">
-              <q-input
-                :model-value="answers[question.id]"
-                filled
-                type="textarea"
-                :label="t('enterText')"
-                rows="3"
-                @update:model-value="saveAnswer(question.id, $event)"
-              />
-            </div>
-
-            <div v-else-if="question.type === 'photo'">
-              <div class="row q-gutter-sm items-center">
-                <div
-                  v-for="photo in getQuestionPhotos(question.id)"
-                  :key="photo.id"
-                  class="thumbnail-preview"
-                  @click="openPhoto(photo, question.id)"
-                >
-                  <img :src="photo.thumbBase64" class="thumbnail-image" />
-                </div>
-                <BtnPhotoAdd
-                  :audit-local-id="currentAudit.localId"
-                  :question-id="question.id"
-                  :photos-count="getQuestionPhotos(question.id).length"
-                  :pic-max="50"
-                  icon-only
-                />
+              <div
+                v-for="photo in getQuestionPhotos(question.id)"
+                :key="photo.id"
+                class="thumbnail-preview"
+                @click="openPhoto(photo, question.id)"
+              >
+                <img :src="photo.thumbBase64" class="thumbnail-image" />
               </div>
+              <BtnPhotoAdd
+                :audit-local-id="currentAudit.localId"
+                :question-id="question.id"
+                :photos-count="getQuestionPhotos(question.id).length"
+                :pic-max="50"
+                icon-only
+              />
             </div>
-          </q-card-section>
-        </q-card>
-
-        <q-card class="q-mt-md">
-          <q-card-section>
-            <q-btn
-              unelevated
-              color="amber"
-              text-color="black"
-              icon="refresh"
-              :label="t('clearAudit')"
-              class="full-width"
-              @click="showClearConfirmDialog = true"
-            />
           </q-card-section>
         </q-card>
       </div>
+      <q-btn
+        unelevated
+        color="amber"
+        text-color="black"
+        icon="refresh"
+        :label="t('clearAudit')"
+        class="full-width"
+        style="min-width: 200px"
+        @click="showClearConfirmDialog = true"
+      />
     </div>
 
     <q-dialog v-model="showClearConfirmDialog" persistent>
@@ -166,6 +155,26 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <LocationConfirmDialog
+      v-model="showStartLocationDialog"
+      :title="t('setStartLocation')"
+      :location-name="currentAudit?.location?.name"
+      :target-location="targetLocationForStart"
+      :confirm-label="t('confirm')"
+      @confirm="handleStartLocationConfirm"
+      @cancel="handleStartLocationCancel"
+    />
+
+    <LocationConfirmDialog
+      v-model="showEndLocationDialog"
+      :title="t('setEndLocation')"
+      :location-name="currentAudit?.location?.name"
+      :target-location="targetLocationForEnd"
+      :confirm-label="t('submit')"
+      @confirm="handleEndLocationConfirm"
+      @cancel="handleEndLocationCancel"
+    />
 
     <RouterView name="photos" />
 
@@ -206,6 +215,7 @@ import { usePhotos } from '@/composable/usePhotos';
 import BtnSubmit from '@/components/pwa/BtnSubmit.vue';
 import BtnGallery from 'src/components/pwa/BtnGallery.vue';
 import BtnPhotoAdd from 'src/components/pwa/BtnPhotoAdd.vue';
+import LocationConfirmDialog from '@/components/pwa/LocationConfirmDialog.vue';
 
 const route = useRoute();
 const { $store, t, $router } = useGlobMixin();
@@ -223,6 +233,8 @@ const loading = ref(true);
 const isMounted = ref(false);
 const showClearConfirmDialog = ref(false);
 const clearing = ref(false);
+const showStartLocationDialog = ref(false);
+const showEndLocationDialog = ref(false);
 
 const questions = computed(() => currentAudit.value?.questions || []);
 const totalQuestions = computed(() => questions.value.length);
@@ -233,6 +245,26 @@ const questionPhotosMap = ref(new Map());
 const canSubmit = computed(() => {
   const requiredQuestions = questions.value.filter(q => q.required);
   return requiredQuestions.every(q => answers.value[q.id] !== undefined);
+});
+
+const targetLocationForStart = computed(() => {
+  const location = currentAudit.value?.location;
+  if (!location?.lat || !location?.lng) return null;
+  return {
+    ...location,
+    latitude: parseFloat(location.lat),
+    longitude: parseFloat(location.lng),
+  };
+});
+
+const targetLocationForEnd = computed(() => {
+  const location = currentAudit.value?.location;
+  if (!location?.lat || !location?.lng) return null;
+  return {
+    ...location,
+    latitude: parseFloat(location.lat),
+    longitude: parseFloat(location.lng),
+  };
 });
 
 watch(
@@ -285,6 +317,15 @@ function saveAnswer(questionId, value) {
 }
 
 async function submit() {
+  if (!currentAudit.value.endLocation) {
+    showEndLocationDialog.value = true;
+    return;
+  }
+
+  await performSubmit();
+}
+
+async function performSubmit() {
   try {
     submitting.value = true;
 
@@ -401,6 +442,7 @@ async function loadAudit() {
 async function checkAuditLoaded(auditLocalId) {
   if (currentAudit.value?.localId === auditLocalId) {
     loading.value = false;
+    checkAndShowStartLocationDialog();
     return;
   }
 
@@ -417,6 +459,8 @@ async function checkAuditLoaded(auditLocalId) {
         color: 'negative',
       });
       $router.push({ name: 'index' });
+    } else {
+      checkAndShowStartLocationDialog();
     }
   } catch (err) {
     console.error('Load audit error', err);
@@ -428,6 +472,55 @@ async function checkAuditLoaded(auditLocalId) {
   } finally {
     loading.value = false;
   }
+}
+
+function checkAndShowStartLocationDialog() {
+  if (!currentAudit.value) return;
+
+  if (!currentAudit.value.startLocation && !currentAudit.value.startedAt) {
+    showStartLocationDialog.value = true;
+  }
+}
+
+async function handleStartLocationConfirm(gpsData) {
+  try {
+    await $store.dispatch('pwaAudits/setStartLocation', {
+      localId: currentAudit.value.localId,
+      location: gpsData,
+    });
+  } catch (err) {
+    console.error('Save start location error', err);
+    $store.dispatch('uiServices/showNotification', {
+      message: t('failedToSaveStartLocation'),
+      color: 'negative',
+    });
+  }
+}
+
+function handleStartLocationCancel() {
+  showStartLocationDialog.value = false;
+  $router.push({ name: 'index' });
+}
+
+async function handleEndLocationConfirm(gpsData) {
+  try {
+    await $store.dispatch('pwaAudits/setEndLocation', {
+      localId: currentAudit.value.localId,
+      location: gpsData,
+    });
+
+    await performSubmit();
+  } catch (err) {
+    console.error('Save end location error', err);
+    $store.dispatch('uiServices/showNotification', {
+      message: t('failedToSaveEndLocation'),
+      color: 'negative',
+    });
+  }
+}
+
+function handleEndLocationCancel() {
+  showEndLocationDialog.value = false;
 }
 
 onMounted(() => {

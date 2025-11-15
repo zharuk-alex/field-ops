@@ -53,11 +53,17 @@ export const logout = async (req, res) => {
 };
 
 export const currentUser = async (req, res) => {
-  const { email, subscription } = req.user;
+  const { id, email, firstName, lastName, role, status, companyId, createdAt } = req.user;
 
   res.json({
+    id,
     email,
-    subscription,
+    firstName,
+    lastName,
+    role,
+    status,
+    companyId,
+    createdAt,
   });
 };
 

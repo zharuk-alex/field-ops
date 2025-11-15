@@ -13,21 +13,21 @@ export default {
       path: '',
       name: 'companies-list',
       components: {
-        list: () => import('@/components/admin/CompaniesList.vue'),
+        list: () => import('src/pages/admin/Companies/CompaniesList.vue'),
       },
     },
     {
       path: 'new',
       name: 'company-create',
       components: {
-        new: () => import('src/pages/admin/CompanyEditPage.vue'),
+        new: () => import('src/pages/admin/Companies/CompanyEditPage.vue'),
       },
     },
     {
       path: ':id',
       name: 'company-edit',
       components: {
-        edit: () => import('src/pages/admin/CompanyEditPage.vue'),
+        edit: () => import('src/pages/admin/Companies/CompanyEditPage.vue'),
       },
     },
   ],

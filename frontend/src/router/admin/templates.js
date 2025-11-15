@@ -13,21 +13,21 @@ export default {
       path: '',
       name: 'templates-list',
       components: {
-        list: () => import('@/components/admin/TemplatesList.vue'),
+        list: () => import('src/pages/admin/Templates/TemplatesList.vue'),
       },
     },
     {
       path: 'new',
       name: 'template-create',
       components: {
-        new: () => import('src/pages/admin/TemplateEditPage.vue'),
+        new: () => import('src/pages/admin/Templates/TemplateEditPage.vue'),
       },
     },
     {
       path: ':id',
       name: 'template-edit',
       components: {
-        edit: () => import('src/pages/admin/TemplateEditPage.vue'),
+        edit: () => import('src/pages/admin/Templates/TemplateEditPage.vue'),
       },
     },
   ],

@@ -23,9 +23,14 @@ const routes = [
       locations,
       users,
       {
-        name: 'user-settings',
-        path: '/user-settings',
-        component: () => import('@/pages/SettingsPage.vue'),
+        name: 'user_profile',
+        path: '/user_profile',
+        component: () => import('@/pages/UserProfile.vue'),
+      },
+      {
+        name: 'user_settings',
+        path: '/user_settings',
+        component: () => import('@/pages/UserSettings.vue'),
       },
     ],
   },
@@ -40,6 +45,7 @@ const routes = [
       },
     ],
   },
+
   {
     path: '/:catchAll(.*)*',
     component: () => import('@/pages/ErrorNotFound.vue'),

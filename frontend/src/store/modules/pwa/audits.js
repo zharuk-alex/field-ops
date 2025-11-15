@@ -46,6 +46,9 @@ export default {
     },
     setStartedAt(state, payload) {
       state.startedAt = payload;
+      if (state.currentAudit) {
+        state.currentAudit.startedAt = payload;
+      }
     },
     clearAnswers(state) {
       state.answers = {};
@@ -58,9 +61,15 @@ export default {
     },
     setStartLocation(state, payload) {
       state.startLocation = payload;
+      if (state.currentAudit) {
+        state.currentAudit.startLocation = payload;
+      }
     },
     setEndLocation(state, payload) {
       state.endLocation = payload;
+      if (state.currentAudit) {
+        state.currentAudit.endLocation = payload;
+      }
     },
     clearCurrentAudit(state) {
       state.currentAudit = null;
@@ -111,6 +120,12 @@ export default {
           commit('setCurrentAudit', auditData.audit);
           commit('setAnswers', auditData.answers || {});
           commit('setStartedAt', auditData.startedAt);
+          if (auditData.startLocation) {
+            commit('setStartLocation', auditData.startLocation);
+          }
+          if (auditData.endLocation) {
+            commit('setEndLocation', auditData.endLocation);
+          }
           console.log('Audit loaded from IndexedDB:', localId);
           return auditData;
         }
@@ -218,6 +233,8 @@ export default {
           startedAt: state.startedAt,
           completedAt: new Date().toISOString(),
           localId: state.currentAudit.localId,
+          startLocation: state.startLocation,
+          endLocation: state.endLocation,
         });
 
         const auditId = result.data.id;
@@ -273,6 +290,28 @@ export default {
         commit('clearCurrentAudit');
       } catch (error) {
         console.error('clearAudit error', error);
+        throw error;
+      }
+    },
+
+    async setStartLocation({ commit, dispatch }, { location }) {
+      try {
+        const startedAt = new Date().toISOString();
+        commit('setStartLocation', location);
+        commit('setStartedAt', startedAt);
+        await dispatch('saveAuditToDB');
+      } catch (error) {
+        console.error('setStartLocation error', error);
+        throw error;
+      }
+    },
+
+    async setEndLocation({ commit, dispatch }, { location }) {
+      try {
+        commit('setEndLocation', location);
+        await dispatch('saveAuditToDB');
+      } catch (error) {
+        console.error('setEndLocation error', error);
         throw error;
       }
     },

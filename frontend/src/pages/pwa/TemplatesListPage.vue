@@ -135,16 +135,6 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
-
-      <LocationConfirmDialog
-        v-model="showLocationConfirmDialog"
-        :title="t('start')"
-        :location-name="locationForConfirm?.name"
-        :target-location="locationForConfirm"
-        :confirm-label="t('start')"
-        @confirm="handleLocationConfirm"
-        @cancel="handleLocationCancel"
-      />
     </q-pull-to-refresh>
 
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -162,7 +152,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
-import LocationConfirmDialog from '@/components/pwa/LocationConfirmDialog.vue';
 
 const { $store, t, $router } = useGlobMixin();
 
@@ -174,12 +163,6 @@ const showLocationDialog = ref(false);
 const selectedTemplate = ref(null);
 const selectedLocation = ref(null);
 const starting = ref(false);
-
-const showLocationConfirmDialog = ref(false);
-const locationForConfirm = ref(null);
-const templateForStart = ref(null);
-const locationIdForStart = ref(null);
-const gpsDataForStart = ref(null);
 const syncing = ref(false);
 
 const locationOptions = computed(() => {
@@ -319,59 +302,9 @@ async function startAuditDirect(template, locationId) {
       return;
     }
 
-    templateForStart.value = template;
-    locationIdForStart.value = locationId;
-
-    const location = template.locations?.find(l => l.id === locationId);
-    console.log('startAuditDirect:', location?.lat, location?.lng);
-
-    if (location && location.lat && location.lng) {
-      locationForConfirm.value = {
-        ...location,
-        latitude: parseFloat(location.lat),
-        longitude: parseFloat(location.lng),
-      };
-      showLocationDialog.value = false;
-      showLocationConfirmDialog.value = true;
-      console.log('Showing LocationConfirmDialog');
-    } else {
-      console.log('Creating audit without GPS confirmation');
-      await createAndStartAudit(template, locationId, null);
-    }
-  } catch (err) {
-    console.error('Start audit error', err);
-    $store.dispatch('uiServices/showNotification', {
-      message: err?.message || t('failedToStartAudit'),
-      color: 'negative',
-    });
-  } finally {
-    starting.value = false;
-  }
-}
-
-async function handleLocationConfirm(gpsData) {
-  gpsDataForStart.value = gpsData;
-  await createAndStartAudit(
-    templateForStart.value,
-    locationIdForStart.value,
-    gpsData,
-  );
-}
-
-function handleLocationCancel() {
-  starting.value = false;
-  templateForStart.value = null;
-  locationIdForStart.value = null;
-  locationForConfirm.value = null;
-  gpsDataForStart.value = null;
-}
-
-async function createAndStartAudit(template, locationId, gpsData) {
-  try {
     const audit = await $store.dispatch('pwaAudits/startAudit', {
       template,
       locationId,
-      startLocation: gpsData,
     });
 
     showLocationDialog.value = false;
@@ -381,7 +314,7 @@ async function createAndStartAudit(template, locationId, gpsData) {
       params: { id: audit.localId },
     });
   } catch (err) {
-    console.error('Create audit error', err);
+    console.error('Start audit error', err);
     $store.dispatch('uiServices/showNotification', {
       message: err?.message || t('failedToStartAudit'),
       color: 'negative',

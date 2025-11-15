@@ -83,6 +83,25 @@
               </div>
             </div>
           </div>
+          <div class="row q-mt-md">
+            <div v-if="startLocationDistance !== null" class="col-12 col-md-6">
+              <div class="text-caption text-grey-7">
+                {{ t('startLocationRadius') }}
+              </div>
+              <div class="text-body1">
+                {{ formatDistance(startLocationDistance) }}
+              </div>
+            </div>
+
+            <div v-if="endLocationDistance !== null" class="col-12 col-md-6">
+              <div class="text-caption text-grey-7">
+                {{ t('endLocationRadius') }}
+              </div>
+              <div class="text-body1">
+                {{ formatDistance(endLocationDistance) }}
+              </div>
+            </div>
+          </div>
         </q-card-section>
       </q-card>
 
@@ -199,9 +218,6 @@
                 <div class="text-caption">
                   {{ formatDateTime(photo.createdAt) }}
                 </div>
-                <div class="text-caption text-grey-6">
-                  {{ formatFileSize(photo.bytes) }}
-                </div>
               </div>
             </div>
           </div>
@@ -214,40 +230,7 @@
       <div class="text-h6 q-mt-md text-grey-7">{{ t('auditNotFound') }}</div>
     </div>
 
-    <q-dialog v-model="showPhotoDialog" maximized>
-      <q-card class="bg-black">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6 text-white">{{ t('photo') }}</div>
-          <q-space />
-          <q-btn icon="close" flat round dense color="white" v-close-popup />
-        </q-card-section>
-
-        <q-card-section class="q-pa-md">
-          <div class="photo-full-container">
-            <img
-              v-if="selectedPhoto"
-              :src="selectedPhoto.url"
-              :alt="'Photo'"
-              class="photo-full-img"
-            />
-          </div>
-
-          <div v-if="selectedPhoto" class="text-white q-mt-md">
-            <div class="text-caption">
-              {{ t('createdAt') }}:
-              {{ formatDateTime(selectedPhoto.createdAt) }}
-            </div>
-            <div class="text-caption">
-              {{ t('size') }}: {{ formatFileSize(selectedPhoto.bytes) }}
-            </div>
-            <div class="text-caption">
-              {{ t('dimensions') }}: {{ selectedPhoto.width }} x
-              {{ selectedPhoto.height }}
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <PhotoDialog v-model="showPhotoDialog" :photo="selectedPhoto" />
   </q-page>
 </template>
 
@@ -257,11 +240,14 @@ import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatDateTime } from '@/helpers/datetime';
+import { useGeoposition } from '@/composable/useGeoposition';
+import PhotoDialog from '@/components/admin/PhotoDialog.vue';
 
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
 const { t } = useI18n();
+const { calculateDistance, formatDistance } = useGeoposition();
 
 const auditId = computed(() => route.params.id);
 const loading = ref(false);
@@ -269,6 +255,50 @@ const showPhotoDialog = ref(false);
 const selectedPhoto = ref(null);
 
 const audit = computed(() => store.getters['adminAudits/currentAudit']);
+
+const startLocationDistance = computed(() => {
+  if (
+    !audit.value?.meta?.startLocation?.latitude ||
+    !audit.value?.meta?.startLocation?.longitude ||
+    !audit.value?.location?.lat ||
+    !audit.value?.location?.lng
+  ) {
+    return null;
+  }
+
+  return calculateDistance(
+    {
+      latitude: audit.value.meta.startLocation.latitude,
+      longitude: audit.value.meta.startLocation.longitude,
+    },
+    {
+      latitude: parseFloat(audit.value.location.lat),
+      longitude: parseFloat(audit.value.location.lng),
+    },
+  );
+});
+
+const endLocationDistance = computed(() => {
+  if (
+    !audit.value?.meta?.endLocation?.latitude ||
+    !audit.value?.meta?.endLocation?.longitude ||
+    !audit.value?.location?.lat ||
+    !audit.value?.location?.lng
+  ) {
+    return null;
+  }
+
+  return calculateDistance(
+    {
+      latitude: audit.value.meta.endLocation.latitude,
+      longitude: audit.value.meta.endLocation.longitude,
+    },
+    {
+      latitude: parseFloat(audit.value.location.lat),
+      longitude: parseFloat(audit.value.location.lng),
+    },
+  );
+});
 
 onMounted(async () => {
   if (!auditId.value) {
@@ -316,18 +346,6 @@ function formatAnswerValue(value, type) {
   return String(value);
 }
 
-function formatFileSize(bytes) {
-  if (!bytes) return '-';
-
-  const kb = bytes / 1024;
-  if (kb < 1024) {
-    return `${kb.toFixed(1)} KB`;
-  }
-
-  const mb = kb / 1024;
-  return `${mb.toFixed(1)} MB`;
-}
-
 function openPhotoDialog(photo) {
   selectedPhoto.value = photo;
   showPhotoDialog.value = true;
@@ -373,18 +391,5 @@ function openPhotoDialog(photo) {
 
 .photo-card-info {
   margin-top: 4px;
-}
-
-.photo-full-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-}
-
-.photo-full-img {
-  max-width: 100%;
-  max-height: 80vh;
-  object-fit: contain;
 }
 </style>

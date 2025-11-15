@@ -13,21 +13,21 @@ export default {
       path: '',
       name: 'locations-list',
       components: {
-        list: () => import('@/components/admin/LocationsList.vue'),
+        list: () => import('src/pages/admin/Locations/LocationsList.vue'),
       },
     },
     {
       path: 'new',
       name: 'location-create',
       components: {
-        new: () => import('src/pages/admin/LocationEditPage.vue'),
+        new: () => import('src/pages/admin/Locations/LocationEditPage.vue'),
       },
     },
     {
       path: ':id',
       name: 'location-edit',
       components: {
-        edit: () => import('src/pages/admin/LocationEditPage.vue'),
+        edit: () => import('src/pages/admin/Locations/LocationEditPage.vue'),
       },
     },
   ],
