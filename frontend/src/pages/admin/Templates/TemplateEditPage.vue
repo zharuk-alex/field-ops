@@ -57,6 +57,17 @@
           </div>
         </div>
 
+        <div class="q-mt-md">
+          <q-toggle
+            v-model="form.restrictPhotoAge"
+            :label="t('restrictPhotoAge')"
+            color="primary"
+          />
+          <div class="text-caption text-grey-7 q-mt-xs">
+            {{ t('restrictPhotoAgeHint') }}
+          </div>
+        </div>
+
         <div class="row q-col-gutter-md q-mt-md">
           <div class="col-12 col-md-6">
             <q-select
@@ -157,6 +168,7 @@ const form = reactive({
   companyId: $store.getters['auth/companyId'] ?? null,
   questionIds: [],
   locationIds: [],
+  restrictPhotoAge: true,
 });
 
 function resetForm() {
@@ -166,6 +178,7 @@ function resetForm() {
   form.companyId = $store.getters['auth/companyId'] ?? null;
   form.questionIds = [];
   form.locationIds = [];
+  form.restrictPhotoAge = true;
 }
 
 async function loadCompanies() {
@@ -251,6 +264,7 @@ async function loadTemplate() {
     form.companyId = data.companyId || form.companyId;
     form.questionIds = data.questionsIds ?? [];
     form.locationIds = data.locationIds ?? [];
+    form.restrictPhotoAge = data.restrictPhotoAge ?? true;
 
     await Promise.all([
       loadQuestions(form.companyId),
@@ -278,6 +292,7 @@ async function onSubmit() {
     companyId: form.companyId || null,
     questions: form.questionIds ?? [],
     locations: form.locationIds ?? [],
+    restrictPhotoAge: form.restrictPhotoAge ?? true,
   };
 
   saving.value = true;

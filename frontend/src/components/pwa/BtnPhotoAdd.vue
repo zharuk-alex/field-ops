@@ -53,6 +53,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  restrictPhotoAge: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits(['photosAdded']);
@@ -129,7 +133,7 @@ const photoQFileChanged = async files => {
       continue;
     }
 
-    if (!photoDateAllowed && !isDev && !isAdmin.value) {
+    if (props.restrictPhotoAge && !photoDateAllowed && !isDev && !isAdmin.value) {
       Notify.create({
         color: 'negative',
         message: t('photos.dateNotAllowed'),

@@ -136,6 +136,7 @@
                 :question-id="question.id"
                 :photos-count="getQuestionPhotos(question.id).length"
                 :pic-max="50"
+                :restrict-photo-age="currentAudit.restrictPhotoAge"
                 icon-only
                 @photos-added="handlePhotosAdded(question.id)"
               />

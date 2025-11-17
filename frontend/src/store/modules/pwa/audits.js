@@ -202,6 +202,7 @@ export default {
         description: template.description,
         questions: template.questions,
         location: template.locations?.find(l => l.id === locationId) || null,
+        restrictPhotoAge: template.restrictPhotoAge ?? true,
       };
 
       commit('setCurrentAudit', localAudit);

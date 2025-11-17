@@ -42,6 +42,11 @@ const Template = sequelize.define(
       allowNull: true,
       references: { model: "users", key: "id" },
     },
+    restrictPhotoAge: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   },
   {
     tableName: "templates",
