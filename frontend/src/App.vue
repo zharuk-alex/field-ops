@@ -34,5 +34,18 @@ onMounted(async () => {
   window.addEventListener('online', handleOnlineStatus);
   window.addEventListener('offline', handleOnlineStatus);
   handleOnlineStatus();
+
+  window.addEventListener('error', event => {
+    if (event.message?.includes('Failed to fetch dynamically imported module')) {
+      if (!sessionStorage.getItem('page-reloaded')) {
+        sessionStorage.setItem('page-reloaded', 'true');
+        window.location.reload();
+      }
+    }
+  });
+
+  window.addEventListener('load', () => {
+    sessionStorage.removeItem('page-reloaded');
+  });
 });
 </script>

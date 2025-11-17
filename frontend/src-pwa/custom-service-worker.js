@@ -96,3 +96,21 @@ self.addEventListener('message', event => {
     self.skipWaiting();
   }
 });
+
+self.addEventListener('fetch', event => {
+  if (event.request.mode === 'navigate' || event.request.destination === 'script') {
+    event.respondWith(
+      fetch(event.request).catch(error => {
+        return caches.match(event.request).then(cachedResponse => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
+          throw error;
+        });
+      })
+    );
+  }
+});
