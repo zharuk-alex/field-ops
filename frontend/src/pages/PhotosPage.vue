@@ -34,6 +34,15 @@
           :alt="`Photo ${currentIndex + 1}`"
           class="main-image"
         />
+        <div v-if="currentPhotoQuestion" class="photo-info">
+          <q-card class="my-card">
+            <q-card-section>
+              {{ t('photos.answerToQuestion') }}: "{{
+                currentPhotoQuestion.questionText
+              }}"
+            </q-card-section>
+          </q-card>
+        </div>
       </div>
 
       <div class="thumbnails-container">
@@ -91,7 +100,7 @@ import { useI18n } from 'vue-i18n';
 import { photosTable } from 'src/boot/db';
 import BtnPhotoAdd from 'src/components/pwa/BtnPhotoAdd.vue';
 
-const { $route, $router } = useGlobMixin();
+const { $route, $router, $store } = useGlobMixin();
 const { t } = useI18n();
 const showDialog = ref(true);
 
@@ -102,6 +111,15 @@ const { photos, photosCount } = usePhotos(auditLocalId, questionId);
 const currentIndex = ref(0);
 
 const currentPhoto = computed(() => photos.value[currentIndex.value]);
+
+const currentAudit = computed(() => $store.getters['pwaAudits/currentAudit']);
+
+const currentPhotoQuestion = computed(() => {
+  if (!currentPhoto.value?.questionId || !currentAudit.value) return null;
+  return currentAudit.value.questions?.find(
+    q => q.id === currentPhoto.value.questionId,
+  );
+});
 
 watch(
   () => $route.params.num,
@@ -157,12 +175,22 @@ const dialogClose = async () => {
   overflow: hidden;
   background-color: #000;
   border-radius: 8px;
+  position: relative;
 }
 
 .main-image {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.photo-info {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: center;
 }
 
 .thumbnails-container {

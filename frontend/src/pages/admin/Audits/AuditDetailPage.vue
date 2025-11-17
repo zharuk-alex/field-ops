@@ -167,7 +167,7 @@
                           v-for="photo in answer.photos"
                           :key="photo.id"
                           class="photo-thumbnail"
-                          @click="openPhotoDialog(photo)"
+                          @click="openPhotoDialog(photo, item.question.questionText)"
                         >
                           <img
                             :src="photo.thumbnailUrl || photo.url"
@@ -230,7 +230,11 @@
       <div class="text-h6 q-mt-md text-grey-7">{{ t('auditNotFound') }}</div>
     </div>
 
-    <PhotoDialog v-model="showPhotoDialog" :photo="selectedPhoto" />
+    <PhotoDialog
+      v-model="showPhotoDialog"
+      :photo="selectedPhoto"
+      :info-text="selectedPhotoQuestion"
+    />
   </q-page>
 </template>
 
@@ -249,6 +253,7 @@ const auditId = computed(() => $route.params.id);
 const loading = ref(false);
 const showPhotoDialog = ref(false);
 const selectedPhoto = ref(null);
+const selectedPhotoQuestion = ref(null);
 
 const audit = computed(() => $store.getters['adminAudits/currentAudit']);
 
@@ -342,8 +347,9 @@ function formatAnswerValue(value, type) {
   return String(value);
 }
 
-function openPhotoDialog(photo) {
+function openPhotoDialog(photo, questionText = null) {
   selectedPhoto.value = photo;
+  selectedPhotoQuestion.value = questionText;
   showPhotoDialog.value = true;
 }
 </script>

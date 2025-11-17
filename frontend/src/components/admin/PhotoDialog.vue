@@ -19,6 +19,11 @@
             :alt="'Photo'"
             class="photo-full-img"
           />
+          <div v-if="infoText" class="photo-info">
+            <q-chip dense color="primary" text-color="white">
+              {{ infoText }}
+            </q-chip>
+          </div>
         </div>
 
         <div v-if="photo" class="text-white q-mt-md">
@@ -44,6 +49,10 @@ defineProps({
     type: Object,
     default: null,
   },
+  infoText: {
+    type: String,
+    default: null,
+  },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -65,11 +74,21 @@ function close() {
   align-items: center;
   justify-content: center;
   min-height: 60vh;
+  position: relative;
 }
 
 .photo-full-img {
   max-width: 100%;
   max-height: 80vh;
   object-fit: contain;
+}
+
+.photo-info {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: center;
 }
 </style>

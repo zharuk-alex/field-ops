@@ -12,7 +12,11 @@
           {{ currentAudit.description }}
         </div>
         <div v-if="currentAudit.location" class="q-mt-sm">
-          <q-chip dense icon="place" color="grey-2">
+          <q-chip
+            dense
+            icon="place"
+            :class="$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-3'"
+          >
             {{ currentAudit.location.name }}
           </q-chip>
         </div>

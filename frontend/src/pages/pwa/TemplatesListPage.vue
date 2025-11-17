@@ -42,13 +42,21 @@
           <q-card-section class="q-pt-sm">
             <div class="row q-col-gutter-sm">
               <div class="col-auto">
-                <q-chip dense icon="help_outline" color="grey-3">
+                <q-chip
+                  dense
+                  icon="help_outline"
+                  :class="$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-3'"
+                >
                   {{ template.questionsCount }}
                   {{ t('question', { n: template.questionsCount }) }}
                 </q-chip>
               </div>
               <div v-if="template.locations?.length" class="col-auto">
-                <q-chip dense icon="place" color="grey-3">
+                <q-chip
+                  dense
+                  icon="place"
+                  :class="$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-3'"
+                >
                   {{ template.locations.length }}
                   {{ t('location', { n: template.locations?.length }) }}
                 </q-chip>
@@ -97,7 +105,11 @@
             <q-separator />
 
             <q-card-section class="q-pt-sm">
-              <q-chip dense icon="help_outline" color="grey-3">
+              <q-chip
+                dense
+                icon="help_outline"
+                :class="$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-3'"
+              >
                 {{ item.template.questionsCount }}
                 {{ t('question', { n: item.template.questionsCount }) }}
               </q-chip>

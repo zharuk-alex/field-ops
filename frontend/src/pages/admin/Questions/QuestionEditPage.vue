@@ -101,11 +101,7 @@
           </div>
 
           <div class="col-12 col-md-4">
-            <q-checkbox
-              v-model="form.required"
-              :label="t('required')"
-              dense
-            />
+            <q-checkbox v-model="form.required" :label="t('required')" dense />
           </div>
         </div>
       </q-card-section>

@@ -151,6 +151,7 @@ export default {
     limitUploadReached: 'You can upload maximum {limit} photos at once',
     gallery: 'Photo Gallery',
     noPhotos: 'No photos',
+    answerToQuestion: 'Answer to question',
   },
   audits: 'Audits',
   audit: 'Audit',

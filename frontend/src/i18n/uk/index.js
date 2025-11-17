@@ -151,6 +151,7 @@ export default {
     limitUploadReached: 'Можна завантажити максимум {limit} фото за раз',
     gallery: 'Галерея фото',
     noPhotos: 'Немає фото',
+    answerToQuestion: 'Відповідь на питання',
   },
   audits: 'Аудити',
   audit: 'Аудит',

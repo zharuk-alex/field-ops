@@ -49,7 +49,7 @@
               />
             </q-item-section>
             <q-item-section>
-              <q-item-label>
+              <q-item-label class="text-uppercase">
                 {{ $t('profile') }}
               </q-item-label>
             </q-item-section>
@@ -67,7 +67,7 @@
               />
             </q-item-section>
             <q-item-section>
-              <q-item-label>
+              <q-item-label class="text-uppercase">
                 {{ $t('settings') }}
               </q-item-label>
             </q-item-section>
