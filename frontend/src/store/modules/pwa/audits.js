@@ -40,6 +40,12 @@ export default {
         ...state.answers,
         [questionId]: value,
       };
+
+      if (state.currentAudit) {
+        const requiredQuestions = state.currentAudit.questions?.filter(q => q.required) || [];
+        const isValid = requiredQuestions.every(q => state.answers[q.id] !== undefined);
+        state.currentAudit.isValid = isValid;
+      }
     },
     setAnswers(state, payload) {
       state.answers = payload;
@@ -144,6 +150,9 @@ export default {
       try {
         if (!state.currentAudit) return;
 
+        const requiredQuestions = state.currentAudit.questions?.filter(q => q.required) || [];
+        const isValid = requiredQuestions.every(q => state.answers[q.id] !== undefined);
+
         const auditData = {
           localId: state.currentAudit.localId,
           templateId: state.currentAudit.templateId,
@@ -157,6 +166,7 @@ export default {
           endLocation: state.endLocation
             ? JSON.parse(JSON.stringify(state.endLocation))
             : null,
+          isValid,
           updatedAt: new Date().toISOString(),
         };
 

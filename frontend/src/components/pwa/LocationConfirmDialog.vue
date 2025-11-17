@@ -25,7 +25,11 @@
             <q-item-label class="text-body2">
               {{ statusMessage }}
             </q-item-label>
-            <q-item-label v-if="distanceText" caption class="q-mt-sm text-primary">
+            <q-item-label
+              v-if="distanceText"
+              caption
+              class="q-mt-sm text-primary"
+            >
               {{ distanceText }}
             </q-item-label>
             <div v-if="showRetry" class="q-mt-md">
@@ -55,7 +59,7 @@
         <q-separator vertical />
         <q-btn
           flat
-          :label="confirmLabel || t('сonfirm')"
+          :label="confirmLabel || t('confirm')"
           color="primary"
           class="col"
           @click="handleConfirm"

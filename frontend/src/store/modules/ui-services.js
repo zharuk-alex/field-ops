@@ -6,21 +6,16 @@ export default {
   state: () => ({
     isOnline: true,
     notifications: [],
-    footerAction: null,
   }),
 
   getters: {
     isOnline: state => state.isOnline,
     notifications: state => state.notifications,
-    footerAction: state => state.footerAction,
   },
 
   mutations: {
     SET_IS_ONLINE(state, payload) {
       state.isOnline = payload;
-    },
-    SET_FOOTER_ACTION(state, payload) {
-      state.footerAction = payload;
     },
     ADD_NOTIFICATION(state, payload) {
       state.notifications.push(payload);
@@ -80,14 +75,6 @@ export default {
     clearAll({ commit }) {
       commit('CLEAR_NOTIFICATIONS');
       return Promise.resolve();
-    },
-
-    setFooterAction({ commit }, payload) {
-      commit('SET_FOOTER_ACTION', payload);
-    },
-
-    clearFooterAction({ commit }) {
-      commit('SET_FOOTER_ACTION', null);
     },
   },
 };

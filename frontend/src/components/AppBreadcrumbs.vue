@@ -11,13 +11,12 @@
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n';
 import { useBreadcrumbs } from '@/composable/useBreadcrumbs';
-import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+import { useGlobMixin } from 'src/composable/useGlobalMixin';
 
-const { t } = useI18n();
-const route = useRoute();
+const { t, $route } = useGlobMixin();
+
 const { crumbs } = useBreadcrumbs(t);
-const isHomePage = computed(() => route.name === 'home');
+const isHomePage = computed(() => $route.name === 'home');
 </script>

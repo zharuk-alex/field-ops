@@ -1,17 +1,17 @@
 import PhotoWorkerArrayBufferCtor from './PhotoWorkerArrayBuffer.js?worker';
 import { resizeToBlobMainThread } from '@/helpers';
 
-const photoBoxSize = {
-  img: { maxWidth: 1200, maxHeight: 900 },
-  thumb: { maxWidth: 250, maxHeight: 250 },
-};
-
 const fmt = d => {
   const pad = n => String(n).padStart(2, '0');
   return (
     `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
     `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
   );
+};
+
+const photoBoxSize = {
+  img: { maxWidth: 1200, maxHeight: 900 },
+  thumb: { maxWidth: 250, maxHeight: 250 },
 };
 
 export function runPhotoWorkerArrayBuffer({
@@ -85,13 +85,17 @@ export async function makeResizesWorkerOrMain({ file, timeout = 60000 }) {
   try {
     return await runPhotoWorkerArrayBuffer({ file, timeout });
   } catch (e) {
+    const errorStr = String(e?.message || e);
     if (
-      String(e?.message || e) !== 'OFFSCREEN_UNSUPPORTED' &&
-      !/OFFSCREEN_UNSUPPORTED/.test(String(e))
+      errorStr.includes('OFFSCREEN_UNSUPPORTED') ||
+      errorStr.includes('OffscreenCanvas') ||
+      errorStr.includes('not supported')
     ) {
-      console.log('makeResizesWorkerOrMain::OFFSCREEN_UNSUPPORTED');
-      // add fallback
+      console.log('OffscreenCanvas not supported, using main thread fallback');
+    } else {
+      console.warn('Worker error, falling back to main thread:', errorStr);
     }
+
     const [imgBlob, thumbBlob] = await Promise.all([
       resizeToBlobMainThread(file, photoBoxSize.img, 0.82, 'image/jpeg'),
       resizeToBlobMainThread(file, photoBoxSize.thumb, 0.8, 'image/jpeg'),

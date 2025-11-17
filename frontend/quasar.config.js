@@ -182,15 +182,19 @@ export default defineConfig(ctx => {
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      // swFilename: 'sw.js',
-      // manifestFilename: 'manifest.json',
-      // extendManifestJson (json) {},
-      // useCredentialsForManifestTag: true,
-      // injectPwaMetaTags: false,
-      // extendPWACustomSWConf (esbuildConf) {},
-      // extendGenerateSWOptions (cfg) {},
-      // extendInjectManifestOptions (cfg) {}
+      workboxMode: 'InjectManifest',
+      swFilename: 'sw.js',
+      manifestFilename: 'manifest.json',
+      extendManifestJson(json) {
+        json.name = 'Field Ops PWA';
+        json.short_name = 'Field Ops';
+        json.description = 'Field Operations Audit Application';
+        json.display = 'standalone';
+        json.start_url = '.';
+      },
+      extendInjectManifestOptions(cfg) {
+        cfg.maximumFileSizeToCacheInBytes = 5 * 1024 * 1024;
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-cordova-apps/configuring-cordova

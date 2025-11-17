@@ -62,12 +62,32 @@
               :options="formatChoices(question.choices)"
               multiple
               filled
+              behavior="dialog"
               :label="t('selectOptions')"
               emit-value
               map-options
               use-chips
+              bottom-slots
+              :popup-content-style="[maxSelectDialogHeight]"
               @update:model-value="saveAnswer(question.id, $event)"
-            />
+            >
+              <template #after-options>
+                <q-separator />
+                <q-card-actions>
+                  <q-btn
+                    icon="mdi-close"
+                    flat
+                    square
+                    color="grey-8"
+                    class="fit col"
+                    v-close-popup
+                    @click="showDialog = false"
+                  />
+                  <q-separator vertical />
+                  <div class="col"></div>
+                </q-card-actions>
+              </template>
+            </q-select>
 
             <q-input
               v-else-if="question.type === 'number'"
@@ -117,6 +137,7 @@
                 :photos-count="getQuestionPhotos(question.id).length"
                 :pic-max="50"
                 icon-only
+                @photos-added="handlePhotosAdded(question.id)"
               />
             </div>
           </q-card-section>
@@ -209,7 +230,6 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
 import { usePhotos } from '@/composable/usePhotos';
 import BtnSubmit from '@/components/pwa/BtnSubmit.vue';
@@ -217,13 +237,13 @@ import BtnGallery from 'src/components/pwa/BtnGallery.vue';
 import BtnPhotoAdd from 'src/components/pwa/BtnPhotoAdd.vue';
 import LocationConfirmDialog from '@/components/pwa/LocationConfirmDialog.vue';
 
-const route = useRoute();
-const { $store, t, $router } = useGlobMixin();
+const { $store, t, $router, $route } = useGlobMixin();
 
 const currentAudit = computed(() => $store.getters['pwaAudits/currentAudit']);
 const answers = computed(() => $store.getters['pwaAudits/answers']);
 const progress = computed(() => $store.getters['pwaAudits/progress']);
 const hydrated = computed(() => $store.getters['pwaAudits/hydrated']);
+const isOnline = computed(() => $store.getters['uiServices/isOnline']);
 
 const auditLocalId = computed(() => currentAudit.value?.localId);
 const { photosCount } = usePhotos(auditLocalId);
@@ -264,6 +284,13 @@ const targetLocationForEnd = computed(() => {
     ...location,
     latitude: parseFloat(location.lat),
     longitude: parseFloat(location.lng),
+  };
+});
+
+const maxSelectDialogHeight = computed(() => {
+  return {
+    maxHeight: `calc(80vh - 64px)`,
+    zIndex: '6003',
   };
 });
 
@@ -316,13 +343,15 @@ function saveAnswer(questionId, value) {
   $store.dispatch('pwaAudits/setAnswer', { questionId, value });
 }
 
-async function submit() {
-  if (!currentAudit.value.endLocation) {
-    showEndLocationDialog.value = true;
-    return;
+function handlePhotosAdded(questionId) {
+  const photos = getQuestionPhotos(questionId);
+  if (photos.length > 0) {
+    saveAnswer(questionId, true);
   }
+}
 
-  await performSubmit();
+async function submit() {
+  showEndLocationDialog.value = true;
 }
 
 async function performSubmit() {
@@ -336,7 +365,7 @@ async function performSubmit() {
       color: 'positive',
     });
 
-    $router.push({ name: 'index' });
+    $router.push({ name: 'home' });
   } catch (err) {
     console.error('Submit audit error', err);
     $store.dispatch('uiServices/showNotification', {
@@ -396,7 +425,7 @@ async function confirmClearAudit() {
           params: { id: newAudit.localId },
         });
       } else {
-        $router.push({ name: 'index' });
+        $router.push({ name: 'home' });
       }
     }
   } catch (err) {
@@ -411,11 +440,11 @@ async function confirmClearAudit() {
 }
 
 async function loadAudit() {
-  const auditLocalId = route.params.id;
+  const auditLocalId = $route.params.id;
 
   if (!auditLocalId) {
-    console.error('No audit ID in route');
-    $router.push({ name: 'index' });
+    console.error('No audit ID in $route');
+    $router.push({ name: 'home' });
     return;
   }
 
@@ -458,7 +487,7 @@ async function checkAuditLoaded(auditLocalId) {
         message: t('auditNotFound'),
         color: 'negative',
       });
-      $router.push({ name: 'index' });
+      $router.push({ name: 'home' });
     } else {
       checkAndShowStartLocationDialog();
     }
@@ -468,7 +497,7 @@ async function checkAuditLoaded(auditLocalId) {
       message: t('failedToLoadAudit'),
       color: 'negative',
     });
-    $router.push({ name: 'index' });
+    $router.push({ name: 'home' });
   } finally {
     loading.value = false;
   }
@@ -499,7 +528,7 @@ async function handleStartLocationConfirm(gpsData) {
 
 function handleStartLocationCancel() {
   showStartLocationDialog.value = false;
-  $router.push({ name: 'index' });
+  $router.push({ name: 'home' });
 }
 
 async function handleEndLocationConfirm(gpsData) {
@@ -508,6 +537,15 @@ async function handleEndLocationConfirm(gpsData) {
       localId: currentAudit.value.localId,
       location: gpsData,
     });
+
+    if (!isOnline.value) {
+      $store.dispatch('uiServices/showNotification', {
+        message: t('auditSavedOffline'),
+        color: 'info',
+      });
+      $router.push({ name: 'home' });
+      return;
+    }
 
     await performSubmit();
   } catch (err) {

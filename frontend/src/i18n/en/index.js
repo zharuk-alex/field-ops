@@ -100,6 +100,7 @@ export default {
   failedToLoadAudit: 'Failed to load audit',
   auditSubmittedSuccessfully: 'Audit submitted successfully',
   failedToSubmitAudit: 'Failed to submit audit',
+  auditSavedOffline: 'Audit saved. Will be submitted when online.',
   enterNumber: 'Enter number',
   enterText: 'Enter text',
   selectPhoto: 'Select photo',

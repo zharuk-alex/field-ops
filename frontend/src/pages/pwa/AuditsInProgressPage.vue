@@ -29,27 +29,23 @@
             <q-icon name="place" size="xs" />
             {{ audit.audit.location.name }}
           </q-item-label>
+          <q-item-label caption>
+            {{ formatDate(audit.startedAt) }}
+          </q-item-label>
         </q-item-section>
 
-        <q-item-section side>
-          <div class="column items-end">
-            <q-circular-progress
-              :value="calculateProgress(audit)"
-              size="50px"
-              :thickness="0.15"
-              color="primary"
-              track-color="grey-3"
-              class="q-mb-xs"
-            >
-              {{ calculateProgress(audit) }}%
-            </q-circular-progress>
-            <q-item-label caption>
-              {{ formatDate(audit.startedAt) }}
-            </q-item-label>
-          </div>
-        </q-item-section>
-
-        <q-item-section side>
+        <q-item-section side class="row q-gutter-md">
+          <q-btn
+            v-if="audit.isValid && !!audit.endLocation"
+            flat
+            dense
+            round
+            icon="send"
+            color="positive"
+            :loading="submittingAuditId === audit.localId"
+            :disable="!isOnline || submittingAuditId === audit.localId"
+            @click.stop="submitAudit(audit)"
+          />
           <q-btn
             flat
             dense
@@ -57,6 +53,7 @@
             icon="delete"
             color="negative"
             @click.stop="confirmDelete(audit)"
+            :disable="submittingAuditId === audit.localId"
           />
         </q-item-section>
       </q-item>
@@ -65,18 +62,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, computed } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
-import { auditsDataTable } from '@/boot/db';
-import { useQuasar } from 'quasar';
+import { auditsDataTable, photosTable } from '@/boot/db';
 
-const router = useRouter();
-const { t } = useGlobMixin();
-const $q = useQuasar();
+const { $store, t, $router, $q } = useGlobMixin();
 
 const loading = ref(true);
 const audits = ref([]);
+const submittingAuditId = ref(null);
+
+const isOnline = computed(() => $store.getters['uiServices/isOnline']);
 
 async function loadAudits() {
   try {
@@ -92,13 +88,6 @@ async function loadAudits() {
   }
 }
 
-function calculateProgress(auditData) {
-  const total = auditData.audit.questions?.length || 0;
-  if (!total) return 0;
-  const answered = Object.keys(auditData.answers || {}).length;
-  return Math.round((answered / total) * 100);
-}
-
 function formatDate(dateString) {
   if (!dateString) return '';
   const date = new Date(dateString);
@@ -112,15 +101,47 @@ function formatDate(dateString) {
 }
 
 function continueAudit(auditData) {
-  router.push({
+  $router.push({
     name: 'audit-perform',
     params: { id: auditData.localId },
   });
 }
 
+async function submitAudit(auditData) {
+  if (!isOnline.value) {
+    $q.notify({
+      message: t('offline'),
+      color: 'warning',
+    });
+    return;
+  }
+
+  try {
+    submittingAuditId.value = auditData.localId;
+
+    await $store.dispatch('pwaAudits/loadAuditByLocalId', auditData.localId);
+    await $store.dispatch('pwaAudits/submitAudit');
+
+    audits.value = audits.value.filter(a => a.localId !== auditData.localId);
+
+    $q.notify({
+      message: t('auditSubmittedSuccessfully'),
+      color: 'positive',
+    });
+  } catch (err) {
+    console.error('Submit audit error', err);
+    $q.notify({
+      message: t('failedToSubmitAudit'),
+      color: 'negative',
+    });
+  } finally {
+    submittingAuditId.value = null;
+  }
+}
+
 function confirmDelete(auditData) {
   $q.dialog({
-    title: t('сonfirm'),
+    title: t('confirm'),
     message: t('confirmDeleteAudit'),
     cancel: true,
     persistent: true,
@@ -131,6 +152,7 @@ function confirmDelete(auditData) {
 
 async function deleteAudit(auditData) {
   try {
+    await photosTable.where('auditLocalId').equals(auditData.localId).delete();
     await auditsDataTable.delete(auditData.localId);
     audits.value = audits.value.filter(a => a.localId !== auditData.localId);
     $q.notify({

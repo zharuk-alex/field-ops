@@ -12,7 +12,7 @@
           round
           dense
           icon="arrow_back"
-          @click="$router.back()"
+          @click="$$router.back()"
           class="q-mr-md"
         />
         <div class="col">
@@ -236,25 +236,21 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import { useI18n } from 'vue-i18n';
 import { formatDateTime } from '@/helpers/datetime';
 import { useGeoposition } from '@/composable/useGeoposition';
 import PhotoDialog from '@/components/admin/PhotoDialog.vue';
+import { useGlobMixin } from 'src/composable/useGlobalMixin';
 
-const route = useRoute();
-const router = useRouter();
-const store = useStore();
-const { t } = useI18n();
+const { $store, t, $route, $router } = useGlobMixin();
+
 const { calculateDistance, formatDistance } = useGeoposition();
 
-const auditId = computed(() => route.params.id);
+const auditId = computed(() => $route.params.id);
 const loading = ref(false);
 const showPhotoDialog = ref(false);
 const selectedPhoto = ref(null);
 
-const audit = computed(() => store.getters['adminAudits/currentAudit']);
+const audit = computed(() => $store.getters['adminAudits/currentAudit']);
 
 const startLocationDistance = computed(() => {
   if (
@@ -302,13 +298,13 @@ const endLocationDistance = computed(() => {
 
 onMounted(async () => {
   if (!auditId.value) {
-    router.back();
+    $router.back();
     return;
   }
 
   loading.value = true;
   try {
-    await store.dispatch('adminAudits/getAudit', auditId.value);
+    await $store.dispatch('adminAudits/getAudit', auditId.value);
   } catch (error) {
     console.error('Failed to load audit:', error);
   } finally {

@@ -100,6 +100,7 @@ export default {
   failedToLoadAudit: 'Не вдалося завантажити аудит',
   auditSubmittedSuccessfully: 'Аудит успішно відправлено',
   failedToSubmitAudit: 'Не вдалося відправити аудит',
+  auditSavedOffline: 'Аудит збережено. Буде відправлено при підключенні до інтернету.',
   enterNumber: 'Введіть число',
   enterText: 'Введіть текст',
   selectPhoto: 'Оберіть фото',

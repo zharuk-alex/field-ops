@@ -1,8 +1,7 @@
-const photoBoxSize = {
-  img: { maxWidth: 1200, maxHeight: 900 },
-  thumb: { maxWidth: 250, maxHeight: 250 },
-  recog: { maxWidth: 3600, maxHeight: 3600 },
-};
+if (typeof OffscreenCanvas === 'undefined') {
+  self.postMessage({ error: 'OFFSCREEN_UNSUPPORTED' });
+  throw new Error('OFFSCREEN_UNSUPPORTED');
+}
 
 const fmt = d => {
   const pad = n => String(n).padStart(2, '0');
@@ -10,6 +9,12 @@ const fmt = d => {
     `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
     `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
   );
+};
+
+const photoBoxSize = {
+  img: { maxWidth: 1200, maxHeight: 900 },
+  thumb: { maxWidth: 250, maxHeight: 250 },
+  recog: { maxWidth: 3600, maxHeight: 3600 },
 };
 
 const getScaledSize = (srcW, srcH, box) => {

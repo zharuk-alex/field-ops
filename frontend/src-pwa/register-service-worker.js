@@ -1,41 +1,56 @@
-import { register } from 'register-service-worker'
-
-// The ready(), registered(), cached(), updatefound() and updated()
-// events passes a ServiceWorkerRegistration instance in their arguments.
-// ServiceWorkerRegistration: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration
+import { register } from 'register-service-worker';
+import { Notify } from 'quasar';
 
 register(process.env.SERVICE_WORKER_FILE, {
-  // The registrationOptions object will be passed as the second argument
-  // to ServiceWorkerContainer.register()
-  // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#Parameter
-
-  // registrationOptions: { scope: './' },
-
-  ready (/* registration */) {
-    // console.log('Service worker is active.')
+  ready() {
+    console.log('Service Worker is active.');
+    console.log('App is ready to work offline.');
   },
 
-  registered (/* registration */) {
-    // console.log('Service worker has been registered.')
+  registered() {
+    console.log('Service Worker has been registered.');
   },
 
-  cached (/* registration */) {
-    // console.log('Content has been cached for offline use.')
+  cached() {
+    console.log('Content has been cached for offline use.');
   },
 
-  updatefound (/* registration */) {
-    // console.log('New content is downloading.')
+  updatefound() {
+    console.log('New content is downloading.');
   },
 
-  updated (/* registration */) {
-    // console.log('New content is available; please refresh.')
+  updated(registration) {
+    console.log('New content is available.');
+
+    Notify.create({
+      message: 'Доступне оновлення застосунку',
+      color: 'primary',
+      icon: 'mdi-update',
+      timeout: 0,
+      actions: [
+        {
+          label: 'Оновити',
+          color: 'white',
+          handler: () => {
+            if (registration && registration.waiting) {
+              registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+            window.location.reload();
+          },
+        },
+        {
+          label: 'Пізніше',
+          color: 'white',
+        },
+      ],
+    });
   },
 
-  offline () {
-    // console.log('No internet connection found. App is running in offline mode.')
+  offline() {
+    console.log('No internet connection found. App is running in offline mode.');
   },
 
-  error (/* err */) {
-    // console.error('Error during service worker registration:', err)
-  }
-})
+  error(err) {
+    console.error('Error during service worker registration:', err);
+  },
+});

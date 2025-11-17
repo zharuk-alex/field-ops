@@ -18,61 +18,30 @@
         flat
         dense
         round
-        icon="filter_list"
+        icon="mdi-filter-outline"
         aria-label="Filter"
         @click="filterDrawer = true"
       />
     </q-toolbar>
   </q-header>
 
-  <q-drawer v-model="filterDrawer" side="right" overlay elevated :width="280">
-    <q-list padding>
-      <q-item-label header>{{ t('filters') }}</q-item-label>
-
-      <q-item>
-        <q-item-section>
-          <q-select
-            v-model="groupBy"
-            :options="groupByOptions"
-            :label="t('groupBy')"
-            emit-value
-            map-options
-            filled
-            @update:model-value="onGroupByChange"
-          />
-        </q-item-section>
-      </q-item>
-    </q-list>
-  </q-drawer>
+  <FiltersDrawer v-model="filterDrawer" />
 </template>
 
 <script setup>
 import { ref, computed, defineEmits } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
+import FiltersDrawer from '@/components/pwa/FiltersDrawer.vue';
 
 const $emit = defineEmits(['click']);
 
-const { $store, t, $route } = useGlobMixin();
+const { $route, isPwaMode } = useGlobMixin();
 
 const filterDrawer = ref(false);
 
 const showFilterButton = computed(() => {
-  return $route?.name === 'index';
+  return isPwaMode && $route?.name === 'home';
 });
-
-const groupBy = computed({
-  get: () => $store.getters['pwaFilters/groupBy'],
-  set: value => $store.dispatch('pwaFilters/setGroupBy', value),
-});
-
-const groupByOptions = computed(() => [
-  { label: t('groupByLocation'), value: 'location' },
-  { label: t('groupByTemplate'), value: 'template' },
-]);
-
-function onGroupByChange(value) {
-  $store.dispatch('pwaFilters/setGroupBy', value);
-}
 </script>
 
 <style lang="scss" scoped></style>
