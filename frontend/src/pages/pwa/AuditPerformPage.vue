@@ -159,7 +159,9 @@
     <q-dialog v-model="showClearConfirmDialog" persistent>
       <q-card style="min-width: 300px">
         <q-card-section>
-          <div class="text-h6">{{ t('clearAudit') }}</div>
+          <div class="text-h6">
+            {{ t('clearAudit') }}
+          </div>
         </q-card-section>
 
         <q-card-section>
@@ -421,10 +423,11 @@ async function confirmClearAudit() {
           locationId,
         });
 
-        $router.replace({
+        await $router.replace({
           name: 'audit-perform',
           params: { id: newAudit.localId },
         });
+        checkAndShowStartLocationDialog();
       } else {
         $router.push({ name: 'home' });
       }
