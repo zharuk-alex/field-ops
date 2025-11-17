@@ -47,6 +47,14 @@ export default {
         state.currentAudit.isValid = isValid;
       }
     },
+    setComment(state, comment) {
+      if (state.currentAudit) {
+        state.currentAudit.meta = {
+          ...state.currentAudit.meta,
+          comment,
+        };
+      }
+    },
     setAnswers(state, payload) {
       state.answers = payload;
     },
@@ -221,6 +229,11 @@ export default {
       await dispatch('saveAuditToDB');
     },
 
+    async setComment({ commit, dispatch }, comment) {
+      commit('setComment', comment);
+      await dispatch('saveAuditToDB');
+    },
+
     async submitAudit({ state, commit }) {
       try {
         if (!state.currentAudit) {
@@ -246,6 +259,7 @@ export default {
           localId: state.currentAudit.localId,
           startLocation: state.startLocation,
           endLocation: state.endLocation,
+          comment: state.currentAudit.meta?.comment,
         });
 
         const auditId = result.data.id;

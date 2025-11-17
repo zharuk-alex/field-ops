@@ -84,6 +84,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  initialSort: {
+    type: Object,
+    default: null,
+  },
 });
 
 const {
@@ -101,6 +105,7 @@ const {
   actionName: props.actionName,
   editRouteName: props.editRouteName,
   columns: props.columns,
+  initialSort: props.initialSort,
 });
 </script>
 

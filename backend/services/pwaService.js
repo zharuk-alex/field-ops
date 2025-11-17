@@ -9,6 +9,7 @@ import {
 } from "#root/db/models/index.js";
 import { Op } from "sequelize";
 import HttpError from "../helpers/HttpError.js";
+import { getAuditById } from "./auditsService.js";
 
 export async function getAvailableTemplates(userId, companyId) {
   const whereCondition = {
@@ -81,6 +82,7 @@ export async function saveAudit({
   userRole,
   startLocation,
   endLocation,
+  comment,
 }) {
   const template = await Template.findByPk(templateId);
 
@@ -117,6 +119,9 @@ export async function saveAudit({
   }
   if (endLocation) {
     meta.endLocation = endLocation;
+  }
+  if (comment) {
+    meta.comment = comment;
   }
 
   const audit = await Audit.create({
@@ -188,29 +193,5 @@ export async function saveAudit({
     }
   }
 
-  const result = await Audit.findByPk(audit.id, {
-    include: [
-      {
-        model: AuditQuestion,
-        as: "items",
-        separate: true,
-        order: [["order", "ASC"]],
-        include: [
-          {
-            model: Answer,
-            as: "answers",
-            attributes: ["id", "value", "comment", "userId"],
-          },
-        ],
-      },
-      {
-        model: Location,
-        as: "location",
-        attributes: ["id", "name", "address"],
-        required: false,
-      },
-    ],
-  });
-
-  return result.get({ plain: true });
+  return await getAuditById(audit.id);
 }

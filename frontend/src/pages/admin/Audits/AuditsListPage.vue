@@ -8,6 +8,7 @@
       edit-route-name="admin:audit:view"
       :columns="columns"
       :custom-body-cell-slots="['status', 'company', 'location', 'assignee']"
+      :initial-sort="{ sortBy: 'endsAt', descending: true }"
     >
       <template #body-cell-status="{ props }">
         <q-td :props="props">
@@ -53,13 +54,13 @@ import { formatDateTime } from '@/helpers/datetime';
 const { t } = useI18n();
 
 const columns = computed(() => [
-  {
-    name: 'id',
-    label: 'ID',
-    field: 'id',
-    align: 'left',
-    sortable: true,
-  },
+  // {
+  //   name: 'id',
+  //   label: 'ID',
+  //   field: 'id',
+  //   align: 'left',
+  //   sortable: true,
+  // },
   {
     name: 'status',
     label: t('status'),
@@ -92,9 +93,7 @@ const columns = computed(() => [
     name: 'assignee',
     label: t('assignee'),
     field: row =>
-      row.assignee
-        ? `${row.assignee.firstName} ${row.assignee.lastName}`
-        : '-',
+      row.assignee ? `${row.assignee.firstName} ${row.assignee.lastName}` : '-',
     align: 'left',
     sortable: true,
   },

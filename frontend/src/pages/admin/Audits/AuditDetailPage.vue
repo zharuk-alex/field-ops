@@ -12,7 +12,7 @@
           round
           dense
           icon="arrow_back"
-          @click="$$router.back()"
+          @click="$router.back()"
           class="q-mr-md"
         />
         <div class="col">
@@ -82,10 +82,20 @@
                 {{ formatDateTime(audit.createdAt) }}
               </div>
             </div>
+
+            <div class="col-12 col-md-6">
+              <div class="text-caption text-grey-7">
+                {{ t('workDuration') }}
+              </div>
+              <div class="text-body1">
+                {{ formatWorkDuration(audit.startsAt, audit.endsAt) }}
+              </div>
+            </div>
           </div>
-          <div class="row q-mt-md">
+          <div class="row q-mt-sm q-col-gutter-md">
             <div v-if="startLocationDistance !== null" class="col-12 col-md-6">
               <div class="text-caption text-grey-7">
+                <q-icon name="mdi-map-marker-distance" />
                 {{ t('startLocationRadius') }}
               </div>
               <div class="text-body1">
@@ -95,11 +105,22 @@
 
             <div v-if="endLocationDistance !== null" class="col-12 col-md-6">
               <div class="text-caption text-grey-7">
+                <q-icon name="mdi-map-marker-distance" />
                 {{ t('endLocationRadius') }}
               </div>
               <div class="text-body1">
                 {{ formatDistance(endLocationDistance) }}
               </div>
+            </div>
+          </div>
+
+          <div v-if="audit.meta?.comment" class="row q-mt-sm q-col-gutter-md">
+            <div class="col-12">
+              <div class="text-caption text-grey-7">
+                <q-icon name="mdi-comment-outline" />
+                {{ t('comment') }}
+              </div>
+              <div class="text-body1">{{ audit.meta.comment }}</div>
             </div>
           </div>
         </q-card-section>
@@ -167,7 +188,9 @@
                           v-for="photo in answer.photos"
                           :key="photo.id"
                           class="photo-thumbnail"
-                          @click="openPhotoDialog(photo, item.question.questionText)"
+                          @click="
+                            openPhotoDialog(photo, item.question.questionText)
+                          "
                         >
                           <img
                             :src="photo.thumbnailUrl || photo.url"
@@ -240,7 +263,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { formatDateTime } from '@/helpers/datetime';
+import { formatDateTime, formatWorkDuration } from '@/helpers/datetime';
 import { useGeoposition } from '@/composable/useGeoposition';
 import PhotoDialog from '@/components/admin/PhotoDialog.vue';
 import { useGlobMixin } from 'src/composable/useGlobalMixin';
@@ -340,8 +363,8 @@ function formatAnswerValue(value, type) {
     return value.join(', ');
   }
 
-  if (type === 'rating') {
-    return `${value} / 5 ⭐`;
+  if (type === 'photo') {
+    return '';
   }
 
   return String(value);

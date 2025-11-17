@@ -148,6 +148,24 @@
           </q-card-section>
         </q-card>
       </div>
+
+      <q-card class="q-mb-md">
+        <q-card-section>
+          <div class="text-subtitle1 text-weight-medium q-mb-sm">
+            {{ t('comment') }}
+          </div>
+          <q-input
+            v-model="auditComment"
+            filled
+            type="textarea"
+            :label="t('enterComment')"
+            rows="3"
+            :hint="t('optional')"
+            @update:model-value="saveComment"
+          />
+        </q-card-section>
+      </q-card>
+
       <q-btn
         unelevated
         color="amber"
@@ -262,6 +280,7 @@ const showClearConfirmDialog = ref(false);
 const clearing = ref(false);
 const showStartLocationDialog = ref(false);
 const showEndLocationDialog = ref(false);
+const auditComment = ref('');
 
 const questions = computed(() => currentAudit.value?.questions || []);
 const totalQuestions = computed(() => questions.value.length);
@@ -568,6 +587,18 @@ async function handleEndLocationConfirm(gpsData) {
 function handleEndLocationCancel() {
   showEndLocationDialog.value = false;
 }
+
+function saveComment(value) {
+  $store.dispatch('pwaAudits/setComment', value);
+}
+
+watch(currentAudit, newAudit => {
+  if (newAudit?.meta?.comment) {
+    auditComment.value = newAudit.meta.comment;
+  } else {
+    auditComment.value = '';
+  }
+}, { immediate: true });
 
 onMounted(() => {
   isMounted.value = true;

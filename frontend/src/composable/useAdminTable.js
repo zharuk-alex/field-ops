@@ -9,6 +9,7 @@ export function useAdminTable(config) {
     actionName,
     editRouteName,
     columns = [],
+    initialSort = null,
   } = config;
 
   const { $store, t, $router, $route } = useGlobMixin();
@@ -25,8 +26,8 @@ export function useAdminTable(config) {
     page: 1,
     rowsPerPage: 10,
     rowsNumber: 0,
-    sortBy: null,
-    descending: false,
+    sortBy: initialSort?.sortBy || null,
+    descending: initialSort?.descending ?? false,
   });
 
   const storeMeta = computed(

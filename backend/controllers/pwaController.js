@@ -37,6 +37,7 @@ export const submitAudit = async (req, res) => {
     localId,
     startLocation,
     endLocation,
+    comment,
   } = req.body;
 
   if (!userId) {
@@ -70,6 +71,7 @@ export const submitAudit = async (req, res) => {
     userRole,
     startLocation,
     endLocation,
+    comment,
   });
 
   return res.status(201).json(audit);
