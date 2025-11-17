@@ -10,7 +10,9 @@
         @click="$emit('click')"
       />
       <q-toolbar-title>
-        <q-btn stretch flat label="Field Ops" :to="{ path: '/' }" />
+        <q-btn flat :to="{ path: '/' }" class="logo-btn">
+          <img src="/icons/icon-128x128.png" alt="Field Ops" class="logo-img" />
+        </q-btn>
       </q-toolbar-title>
 
       <q-btn
@@ -44,4 +46,14 @@ const showFilterButton = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.logo-btn {
+  padding: 4px;
+}
+
+.logo-img {
+  height: 40px;
+  width: 40px;
+  display: block;
+}
+</style>
