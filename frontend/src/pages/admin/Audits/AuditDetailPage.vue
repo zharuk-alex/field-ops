@@ -7,16 +7,7 @@
 
     <div v-else-if="audit">
       <div class="row items-center q-mb-md">
-        <q-btn
-          flat
-          round
-          dense
-          icon="arrow_back"
-          @click="$router.back()"
-          class="q-mr-md"
-        />
         <div class="col">
-          <div class="text-h5">{{ t('auditDetails') }}</div>
           <div class="text-caption text-grey-7">
             {{ t('audit') }} #{{ audit.id }}
           </div>

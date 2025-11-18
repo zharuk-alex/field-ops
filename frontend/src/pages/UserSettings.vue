@@ -1,18 +1,6 @@
 <template>
   <q-page padding>
     <div class="settings-container">
-      <div class="row items-center q-mb-lg">
-        <q-btn
-          flat
-          round
-          dense
-          icon="arrow_back"
-          @click="$router.back()"
-          class="q-mr-md"
-        />
-        <div class="text-h5">{{ t('settings') }}</div>
-      </div>
-
       <q-card class="settings-card">
         <q-card-section>
           <div class="text-h6 q-mb-md">{{ t('appearance') }}</div>
@@ -20,11 +8,7 @@
           <q-list>
             <q-item clickable @click="toggleMode" class="q-mb-md">
               <q-item-section avatar>
-                <q-icon
-                  name="mdi-theme-light-dark"
-                  color="primary"
-                  size="md"
-                />
+                <q-icon name="mdi-theme-light-dark" color="primary" size="md" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ t('theme') }}</q-item-label>
@@ -37,7 +21,11 @@
                   :model-value="$q.dark.isActive"
                   @update:model-value="toggleMode"
                   color="primary"
-                  :icon="$q.dark.isActive ? 'mdi-moon-waning-crescent' : 'mdi-white-balance-sunny'"
+                  :icon="
+                    $q.dark.isActive
+                      ? 'mdi-moon-waning-crescent'
+                      : 'mdi-white-balance-sunny'
+                  "
                 />
               </q-item-section>
             </q-item>
@@ -62,7 +50,11 @@
                     <q-icon name="mdi-web" />
                   </template>
                 </q-select>
-                <q-item-label v-if="!isOnline" caption class="text-negative q-mt-xs">
+                <q-item-label
+                  v-if="!isOnline"
+                  caption
+                  class="text-negative q-mt-xs"
+                >
                   {{ t('offline') }}
                 </q-item-label>
               </q-item-section>

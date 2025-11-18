@@ -6,18 +6,6 @@
     </div>
 
     <div v-else-if="user" class="profile-container">
-      <div class="row items-center q-mb-lg">
-        <q-btn
-          flat
-          round
-          dense
-          icon="arrow_back"
-          @click="$router.back()"
-          class="q-mr-md"
-        />
-        <div class="text-h5">{{ t('profile') }}</div>
-      </div>
-
       <q-card class="profile-card">
         <q-card-section class="text-center q-pb-none">
           <q-avatar size="100px" color="primary" text-color="white">
@@ -95,7 +83,9 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label caption>{{ t('memberSince') }}</q-item-label>
-                <q-item-label>{{ formatDateTime(user.createdAt) }}</q-item-label>
+                <q-item-label>{{
+                  formatDateTime(user.createdAt)
+                }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -115,7 +105,9 @@
 
     <div v-else class="text-center q-pa-xl">
       <q-icon name="error" size="64px" color="grey" />
-      <div class="text-h6 q-mt-md text-grey-7">{{ t('failedToLoadProfile') }}</div>
+      <div class="text-h6 q-mt-md text-grey-7">
+        {{ t('failedToLoadProfile') }}
+      </div>
     </div>
   </q-page>
 </template>

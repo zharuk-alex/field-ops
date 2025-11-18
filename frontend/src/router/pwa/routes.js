@@ -40,11 +40,21 @@ const routes = [
         name: 'user_profile',
         path: '/user_profile',
         component: () => import('@/pages/UserProfile.vue'),
+        meta: {
+          menu: false,
+          icon: 'mdi-account',
+          i18n: 'profile',
+        },
       },
       {
         name: 'user_settings',
         path: '/user_settings',
         component: () => import('@/pages/UserSettings.vue'),
+        meta: {
+          menu: false,
+          icon: 'mdi-account-settings',
+          i18n: 'settings',
+        },
       },
     ],
   },

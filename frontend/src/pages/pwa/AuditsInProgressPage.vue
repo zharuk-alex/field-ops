@@ -1,7 +1,5 @@
 <template>
   <q-page padding>
-    <div class="text-h5 q-mb-md">{{ t('auditsInProgress') }}</div>
-
     <div v-if="loading" class="text-center q-pa-xl">
       <q-spinner size="50px" color="primary" />
     </div>
