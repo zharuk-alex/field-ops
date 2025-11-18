@@ -21,7 +21,15 @@ export default defineRouter(function (/* { store, ssrContext } */) {
       : createWebHashHistory;
 
   const Router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
+    scrollBehavior(to, _from, savedPosition) {
+      if (savedPosition) {
+        return savedPosition;
+      }
+      if (to.hash) {
+        return { el: to.hash, behavior: 'smooth' };
+      }
+      return { left: 0, top: 0 };
+    },
     routes,
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
