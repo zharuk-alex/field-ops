@@ -116,12 +116,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
 import { formatDateTime } from '@/helpers/datetime';
-import { api } from '@/boot/axios';
 
 const { $store, t, $router } = useGlobMixin();
 
 const loading = ref(false);
-const user = ref(null);
+const user = computed(() => $store.getters['auth/user']);
 
 const userFullName = computed(() => {
   if (!user.value) return '';
@@ -164,14 +163,15 @@ function getStatusColor(status) {
 async function loadProfile() {
   loading.value = true;
   try {
-    const { data } = await api.get('/api/auth/current');
-    user.value = data;
+    await $store.dispatch('auth/fetchCurrentUser');
   } catch (error) {
     console.error('Failed to load profile:', error);
-    $store.dispatch('uiServices/showNotification', {
-      message: t('failedToLoadProfile'),
-      color: 'negative',
-    });
+    if (!user.value) {
+      $store.dispatch('uiServices/showNotification', {
+        message: t('failedToLoadProfile'),
+        color: 'negative',
+      });
+    }
   } finally {
     loading.value = false;
   }

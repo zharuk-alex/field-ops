@@ -56,6 +56,10 @@ export const loginUser = async (payload) => {
     throw HttpError(401, "Email or password is wrong");
   }
 
+  if (user.status !== "active") {
+    throw HttpError(403, "Account is inactive");
+  }
+
   const paswordCompare = await bcrypt.compare(password, user.password);
   if (!paswordCompare) {
     throw HttpError(401, "Email or password is wrong");
