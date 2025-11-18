@@ -13,6 +13,7 @@ export function useGlobMixin() {
   const isDev = process.env.DEV || process.env.NODE_ENV === 'development';
   const isAdmin = computed(() => $store.getters['auth/user']?.role === 'admin');
   const isPwaMode = (import.meta.env.VITE_BUILD_TARGET || 'pwa') === 'pwa';
+  const isAdminBuild = (import.meta.env.VITE_BUILD_TARGET || 'pwa') === 'admin';
 
   return {
     $q,
@@ -23,5 +24,6 @@ export function useGlobMixin() {
     isDev,
     isAdmin,
     isPwaMode,
+    isAdminBuild,
   };
 }

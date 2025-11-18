@@ -24,7 +24,7 @@
       style="height: calc(100% - 50px); padding-bottom: 24px"
     >
       <q-scroll-area
-        style="height: 50%"
+        style="height: calc(100% - 200px); min-height: 200px"
         :content-style="{ display: 'flex', flexDirection: 'column' }"
       >
         <q-list class="full-width q-mt-md">
@@ -32,7 +32,7 @@
         </q-list>
       </q-scroll-area>
       <q-scroll-area
-        style="height: 50%"
+        style="height: 200px"
         :content-style="{ display: 'flex', flexDirection: 'column' }"
       >
         <q-list class="q-mt-auto">

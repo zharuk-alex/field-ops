@@ -1,10 +1,10 @@
 import { LocalStorage } from 'quasar'
 import { api } from 'boot/axios'
 
+const BUILD_TARGET = import.meta.env.VITE_BUILD_TARGET || 'pwa'
 const TOKEN_KEY =
-  import.meta.env.VITE_STORAGE_TOKEN_KEY ||
-  `field-ops:${import.meta.env.VITE_BUILD_TARGET || 'pwa'}:token`
-const USER_KEY = `field-ops:${import.meta.env.VITE_BUILD_TARGET || 'pwa'}:user`
+  import.meta.env.VITE_STORAGE_TOKEN_KEY || `field-ops:${BUILD_TARGET}:token`
+const USER_KEY = `field-ops:${BUILD_TARGET}:user`
 
 export default {
   namespaced: true,

@@ -31,6 +31,11 @@ onMounted(async () => {
   await ensurePersistence();
   await setLocale();
 
+  const BUILD_TARGET = import.meta.env.VITE_BUILD_TARGET || 'pwa';
+  if (BUILD_TARGET === 'admin') {
+    document.title = 'Field Ops Admin';
+  }
+
   window.addEventListener('online', handleOnlineStatus);
   window.addEventListener('offline', handleOnlineStatus);
   handleOnlineStatus();

@@ -3,6 +3,9 @@
     <q-page class="flex justify-center items-center">
       <q-card class="q-pa-lg shadow-2" style="max-width: 400px; width: 90dvw"
         :class="`bg-grey-${$q.dark.isActive ? 9 : 1}`">
+        <q-card-section v-if="isAdminBuild" class="text-center q-pb-none">
+          <q-badge color="red" class="text-h6 q-pa-sm">Admin</q-badge>
+        </q-card-section>
         <q-card-section>
           <q-form ref="loginForm" v-model="formIsValid" @submit="onSubmit" @reset="onReset" class="q-gutter-y-lg">
             <q-input clearable v-model.trim="email" type="text" :label="$t('email')" lazy-rules :rules="[
@@ -35,7 +38,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useGlobMixin } from '@/composable/useGlobalMixin.js'
 
-const { $store, $router, $q } = useGlobMixin()
+const { $store, $router, $q, isAdminBuild } = useGlobMixin()
 
 const email = ref(null)
 const password = ref(null)

@@ -13,6 +13,7 @@
         <q-btn flat :to="{ path: '/' }" class="logo-btn">
           <img src="/icons/icon-128x128.png" alt="Field Ops" class="logo-img" />
         </q-btn>
+        <q-badge v-if="isAdminBuild" color="red" class="q-ml-sm">Admin</q-badge>
       </q-toolbar-title>
 
       <q-btn
@@ -57,7 +58,7 @@ import FiltersDrawer from '@/components/pwa/FiltersDrawer.vue';
 
 const $emit = defineEmits(['click', 'clear-audit']);
 
-const { $route, isPwaMode, t } = useGlobMixin();
+const { $route, isPwaMode, isAdminBuild, t } = useGlobMixin();
 
 const filterDrawer = ref(false);
 
