@@ -24,6 +24,26 @@
         aria-label="Filter"
         @click="filterDrawer = true"
       />
+
+      <q-btn
+        v-if="showAuditMenu"
+        flat
+        dense
+        round
+        icon="mdi-dots-vertical"
+        aria-label="Menu"
+      >
+        <q-menu>
+          <q-list style="min-width: 200px">
+            <q-item clickable v-close-popup @click="$emit('clear-audit')">
+              <q-item-section avatar>
+                <q-icon name="refresh" color="amber" />
+              </q-item-section>
+              <q-item-section>{{ t('clearAudit') }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
     </q-toolbar>
   </q-header>
 
@@ -35,14 +55,18 @@ import { ref, computed, defineEmits } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
 import FiltersDrawer from '@/components/pwa/FiltersDrawer.vue';
 
-const $emit = defineEmits(['click']);
+const $emit = defineEmits(['click', 'clear-audit']);
 
-const { $route, isPwaMode } = useGlobMixin();
+const { $route, isPwaMode, t } = useGlobMixin();
 
 const filterDrawer = ref(false);
 
 const showFilterButton = computed(() => {
   return isPwaMode && $route?.name === 'home';
+});
+
+const showAuditMenu = computed(() => {
+  return isPwaMode && $route?.name === 'audit-perform';
 });
 </script>
 

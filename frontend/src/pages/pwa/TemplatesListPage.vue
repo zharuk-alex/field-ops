@@ -71,13 +71,21 @@
           v-for="group in groupedByLocation"
           :key="group.locationId || 'no-location'"
         >
-          <div class="text-h6 q-mb-sm q-mt-md">
-            <q-icon
-              :name="group.locationId ? 'place' : 'layers'"
-              class="q-mr-sm"
-            />
-            {{ group.locationName }}
-          </div>
+          <q-btn
+            flat
+            @click.stop="openMapForLocation(group)"
+            class="q-mb-sm q-mt-md"
+          >
+            <div class="row items-center no-wrap">
+              <q-icon
+                :name="group.locationId ? 'place' : 'layers'"
+                class="q-mr-sm"
+              />
+              <span class="text-body1 text-left">
+                {{ group.locationName }}
+              </span>
+            </div>
+          </q-btn>
 
           <q-card
             v-for="item in group.items"
@@ -165,7 +173,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
 
-const { $store, t, $router } = useGlobMixin();
+const { $store, t, $router, $q } = useGlobMixin();
 
 const loading = computed(() => $store.getters['pwaTemplates/loading']);
 const templates = computed(() => $store.getters['pwaTemplates/templates']);
@@ -197,6 +205,8 @@ const groupedByLocation = computed(() => {
           groups.set(key, {
             locationId: location.id,
             locationName: location.name,
+            locationLat: location.lat,
+            locationLng: location.lng,
             items: [],
           });
         }
@@ -211,6 +221,8 @@ const groupedByLocation = computed(() => {
         groups.set(key, {
           locationId: null,
           locationName: t('templatesWithoutLocation'),
+          locationLat: null,
+          locationLng: null,
           items: [],
         });
       }
@@ -336,6 +348,32 @@ async function startAuditDirect(template, locationId) {
   }
 }
 
+function hasLocationCoordinates(group) {
+  return group.locationLat && group.locationLng;
+}
+
+function openMapForLocation(group) {
+  if (!group.locationId || !hasLocationCoordinates(group)) {
+    return;
+  }
+
+  const lat = parseFloat(group.locationLat);
+  const lng = parseFloat(group.locationLng);
+  const locationName = encodeURIComponent(group.locationName);
+
+  let mapUrl;
+
+  if ($q.platform.is.ios) {
+    mapUrl = `maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d&q=${locationName}`;
+  } else if ($q.platform.is.android) {
+    mapUrl = `google.navigation:q=${lat},${lng}`;
+  } else {
+    mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+  }
+
+  window.open(mapUrl, '_blank');
+}
+
 onMounted(loadTemplates);
 </script>
 
@@ -347,6 +385,14 @@ onMounted(loadTemplates);
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.location-icon {
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--q-primary);
   }
 }
 </style>

@@ -165,17 +165,6 @@
           />
         </q-card-section>
       </q-card>
-
-      <q-btn
-        unelevated
-        color="amber"
-        text-color="black"
-        icon="refresh"
-        :label="t('clearAudit')"
-        class="full-width"
-        style="min-width: 200px"
-        @click="showClearConfirmDialog = true"
-      />
     </div>
 
     <q-dialog v-model="showClearConfirmDialog" persistent>
@@ -254,7 +243,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, inject } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
 import { usePhotos } from '@/composable/usePhotos';
 import BtnSubmit from '@/components/pwa/BtnSubmit.vue';
@@ -263,6 +252,7 @@ import BtnPhotoAdd from 'src/components/pwa/BtnPhotoAdd.vue';
 import LocationConfirmDialog from '@/components/pwa/LocationConfirmDialog.vue';
 
 const { $store, t, $router, $route } = useGlobMixin();
+const clearAuditTrigger = inject('clearAuditTrigger', ref(0));
 
 const currentAudit = computed(() => $store.getters['pwaAudits/currentAudit']);
 const answers = computed(() => $store.getters['pwaAudits/answers']);
@@ -599,6 +589,12 @@ watch(currentAudit, newAudit => {
     auditComment.value = '';
   }
 }, { immediate: true });
+
+watch(clearAuditTrigger, (newVal) => {
+  if (newVal > 0) {
+    showClearConfirmDialog.value = true;
+  }
+});
 
 onMounted(() => {
   isMounted.value = true;
