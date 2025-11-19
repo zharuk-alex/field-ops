@@ -19,6 +19,7 @@ import locationsRouter from "./routes/locationsRouter.js";
 import auditsRouter from "./routes/auditsRouter.js";
 import pwaRouter from "./routes/pwaRouter.js";
 import photosRouter from "./routes/photosRouter.js";
+import dashboardRouter from "./routes/dashboardRouter.js";
 
 import "./db/models/index.js";
 import sequelize from "./db/Sequelize.js";
@@ -53,6 +54,7 @@ app.use("/api/locations", locationsRouter);
 app.use("/api/audits", auditsRouter);
 app.use("/api/pwa", pwaRouter);
 app.use("/api/photos", photosRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });

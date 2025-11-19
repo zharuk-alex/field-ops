@@ -200,4 +200,9 @@ export default {
   },
   appearance: 'Зовнішній вигляд',
   theme: 'Тема',
+  dashboard: 'Панель керування',
+  totalAudits: 'Всього аудитів',
+  activeUsers: 'Активних користувачів',
+  activeTemplates: 'Активних шаблонів',
+  totalLocations: 'Всього локацій',
 };

@@ -42,6 +42,9 @@ if (BUILD_TARGET === 'admin') {
   import('./modules/admin/audits.js').then(m => {
     store.registerModule('adminAudits', m.default);
   });
+  import('./modules/admin/dashboard.js').then(m => {
+    store.registerModule('adminDashboard', m.default);
+  });
 } else {
   import('./modules/pwa/templates.js').then(m => {
     store.registerModule('pwaTemplates', m.default);

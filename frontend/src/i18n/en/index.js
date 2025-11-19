@@ -199,4 +199,9 @@ export default {
   },
   appearance: 'Appearance',
   theme: 'Theme',
+  dashboard: 'Dashboard',
+  totalAudits: 'Total audits',
+  activeUsers: 'Active users',
+  activeTemplates: 'Active templates',
+  totalLocations: 'Total locations',
 };
