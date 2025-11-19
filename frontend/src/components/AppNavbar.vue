@@ -16,6 +16,16 @@
         <q-badge v-if="isAdminBuild" color="red" class="q-ml-sm">Admin</q-badge>
       </q-toolbar-title>
 
+      <q-icon
+        v-if="isPwaMode && !isOnline"
+        name="cloud_off"
+        color="orange"
+        size="sm"
+        class="q-mr-sm"
+      >
+        <q-tooltip>{{ t('offline') }}</q-tooltip>
+      </q-icon>
+
       <q-btn
         v-if="showFilterButton"
         flat
@@ -58,9 +68,11 @@ import FiltersDrawer from '@/components/pwa/FiltersDrawer.vue';
 
 const $emit = defineEmits(['click', 'clear-audit']);
 
-const { $route, isPwaMode, isAdminBuild, t } = useGlobMixin();
+const { $route, $store, isPwaMode, isAdminBuild, t } = useGlobMixin();
 
 const filterDrawer = ref(false);
+
+const isOnline = computed(() => $store.getters['uiServices/isOnline']);
 
 const showFilterButton = computed(() => {
   return isPwaMode && $route?.name === 'home';
