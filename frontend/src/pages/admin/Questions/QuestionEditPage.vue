@@ -1,15 +1,5 @@
 <template>
   <q-card>
-    <q-card-section>
-      <div class="text-h6">
-        {{
-          isNew
-            ? t('create') + ' ' + t('question')
-            : t('edit') + ' ' + t('question')
-        }}
-      </div>
-    </q-card-section>
-
     <q-form ref="formRef" @submit.prevent="onSubmit" class="q-gutter-md">
       <q-card-section>
         <q-input
@@ -144,7 +134,10 @@ const QUESTION_TYPES = [
 ];
 const STATUS = ['active', 'inactive'];
 
-const typeOptions = QUESTION_TYPES.map(v => ({ label: t(v), value: v }));
+const typeOptions = QUESTION_TYPES.map(v => ({
+  label: t(`questionType.${v}`),
+  value: v,
+}));
 const statusOptions = STATUS.map(v => ({ label: t(v), value: v }));
 
 const companies = computed(() => $store.getters['adminCompanies/companies']);

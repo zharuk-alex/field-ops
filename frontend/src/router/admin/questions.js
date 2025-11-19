@@ -4,10 +4,11 @@ export default {
   component: () => import('@/layouts/ListAndCrudLayout.vue'),
   meta: {
     title: 'Questions',
-    i18n: 'question',
+    i18n: 'questions',
     userRole: 'admin',
     menu: true,
   },
+  redirect: { name: 'questions-list' },
   children: [
     {
       path: '',
@@ -22,12 +23,18 @@ export default {
       components: {
         new: () => import('src/pages/admin/Questions/QuestionEditPage.vue'),
       },
+      meta: {
+        i18n: 'create',
+      },
     },
     {
       path: ':id',
       name: 'question-edit',
       components: {
         edit: () => import('src/pages/admin/Questions/QuestionEditPage.vue'),
+      },
+      meta: {
+        i18n: 'edit',
       },
     },
   ],

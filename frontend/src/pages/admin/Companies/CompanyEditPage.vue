@@ -1,15 +1,5 @@
 <template>
   <q-card>
-    <q-card-section>
-      <div class="text-h6">
-        {{
-          isNew
-            ? t('create') + ' ' + t('company')
-            : t('edit') + ' ' + t('company')
-        }}
-      </div>
-    </q-card-section>
-
     <q-form @submit.prevent="onSubmit" greedy class="q-gutter-md">
       <q-card-section>
         <q-input

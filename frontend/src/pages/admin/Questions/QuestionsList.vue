@@ -2,7 +2,6 @@
   <q-table
     flat
     ref="tableRef"
-    title="Questions"
     :rows="rows"
     :columns="columns"
     row-key="id"
@@ -58,7 +57,7 @@ const columns = [
   {
     name: 'questionText',
     field: 'questionText',
-    label: ' ', // t('question'),
+    label: t('question'),
     align: 'left',
     sortable: true,
   },

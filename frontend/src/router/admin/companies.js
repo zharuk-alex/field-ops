@@ -4,10 +4,11 @@ export default {
   component: () => import('@/layouts/ListAndCrudLayout.vue'),
   meta: {
     title: 'Companies',
-    i18n: 'company',
+    i18n: 'companies',
     userRole: 'admin',
     menu: true,
   },
+  redirect: { name: 'companies-list' },
   children: [
     {
       path: '',
@@ -22,12 +23,18 @@ export default {
       components: {
         new: () => import('src/pages/admin/Companies/CompanyEditPage.vue'),
       },
+      meta: {
+        i18n: 'create',
+      },
     },
     {
       path: ':id',
       name: 'company-edit',
       components: {
         edit: () => import('src/pages/admin/Companies/CompanyEditPage.vue'),
+      },
+      meta: {
+        i18n: 'edit',
       },
     },
   ],

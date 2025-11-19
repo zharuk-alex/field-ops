@@ -2,7 +2,7 @@
   <q-card>
     <q-card-section>
       <div class="text-h6">
-        {{ isNew ? t('create') : t('edit') }} {{ t('audit') }}
+        {{ pageTitle }}
       </div>
     </q-card-section>
 
@@ -148,7 +148,7 @@ import { useGlobMixin } from '@/composable/useGlobalMixin';
 
 const { $store, t, $router } = useGlobMixin();
 
-const isNew = computed(() => true);
+const pageTitle = computed(() => `${t('create')} ${t('audit')}`);
 
 const saving = ref(false);
 const selectedTemplate = ref(null);

@@ -2,7 +2,6 @@
   <q-table
     flat
     ref="tableRef"
-    title="Companies"
     :rows="rows"
     :columns="columns"
     row-key="id"
@@ -75,7 +74,7 @@ const columns = [
   {
     name: 'name',
     field: 'name',
-    label: ' ', // t('company'),
+    label: t('name'),
     align: 'left',
     sortable: true,
   },

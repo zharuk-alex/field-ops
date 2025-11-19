@@ -2,7 +2,6 @@
   <q-table
     flat
     ref="tableRef"
-    title="Users"
     :rows="rows"
     :columns="columns"
     row-key="id"

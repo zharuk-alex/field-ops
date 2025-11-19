@@ -13,7 +13,7 @@
         </div>
       </div>
 
-      <div v-else-if="groupBy === 'template'" class="q-gutter-md">
+      <div v-else-if="groupBy === 'template'" class="q-gutter-lg q-pb-xl">
         <q-card
           v-for="template in templates"
           :key="template.id"
@@ -66,7 +66,7 @@
         </q-card>
       </div>
 
-      <div v-else class="q-gutter-md">
+      <div v-else class="q-gutter-lg q-pb-xl">
         <div
           v-for="group in groupedByLocation"
           :key="group.locationId || 'no-location'"

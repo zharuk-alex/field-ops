@@ -4,10 +4,11 @@ export default {
   component: () => import('@/layouts/ListAndCrudLayout.vue'),
   meta: {
     title: 'Templates',
-    i18n: 'template',
+    i18n: 'templates',
     userRole: 'admin',
     menu: true,
   },
+  redirect: { name: 'templates-list' },
   children: [
     {
       path: '',
@@ -22,12 +23,18 @@ export default {
       components: {
         new: () => import('src/pages/admin/Templates/TemplateEditPage.vue'),
       },
+      meta: {
+        i18n: 'create',
+      },
     },
     {
       path: ':id',
       name: 'template-edit',
       components: {
         edit: () => import('src/pages/admin/Templates/TemplateEditPage.vue'),
+      },
+      meta: {
+        i18n: 'edit',
       },
     },
   ],

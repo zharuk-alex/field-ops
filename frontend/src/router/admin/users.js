@@ -8,6 +8,7 @@ export default {
     userRole: 'admin',
     menu: true,
   },
+  redirect: { name: 'users-list' },
   children: [
     {
       path: '',
@@ -22,12 +23,18 @@ export default {
       components: {
         new: () => import('src/pages/admin/Users/UserEditPage.vue'),
       },
+      meta: {
+        i18n: 'create',
+      },
     },
     {
       path: ':id',
       name: 'user-edit',
       components: {
         edit: () => import('src/pages/admin/Users/UserEditPage.vue'),
+      },
+      meta: {
+        i18n: 'edit',
       },
     },
   ],

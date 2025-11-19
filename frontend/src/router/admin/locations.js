@@ -4,10 +4,11 @@ export default {
   component: () => import('@/layouts/ListAndCrudLayout.vue'),
   meta: {
     title: 'Locations',
-    i18n: 'location',
+    i18n: 'locations',
     userRole: 'admin',
     menu: true,
   },
+  redirect: { name: 'locations-list' },
   children: [
     {
       path: '',
@@ -22,12 +23,18 @@ export default {
       components: {
         new: () => import('src/pages/admin/Locations/LocationEditPage.vue'),
       },
+      meta: {
+        i18n: 'create',
+      },
     },
     {
       path: ':id',
       name: 'location-edit',
       components: {
         edit: () => import('src/pages/admin/Locations/LocationEditPage.vue'),
+      },
+      meta: {
+        i18n: 'edit',
       },
     },
   ],
