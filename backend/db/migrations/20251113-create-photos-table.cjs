@@ -8,7 +8,7 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      audit_id: {
+      auditId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
@@ -18,7 +18,7 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
-      answer_id: {
+      answerId: {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
@@ -28,7 +28,7 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
-      user_id: {
+      userId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
@@ -38,7 +38,7 @@ module.exports = {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       },
-      cloudinary_public_id: {
+      cloudinaryPublicId: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -46,7 +46,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      thumbnail_url: {
+      thumbnailUrl: {
         type: Sequelize.STRING,
         allowNull: true,
       },
@@ -70,22 +70,22 @@ module.exports = {
         type: Sequelize.JSONB,
         allowNull: true,
       },
-      created_at: {
+      createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      updated_at: {
+      updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     });
 
-    await queryInterface.addIndex('photos', ['audit_id']);
-    await queryInterface.addIndex('photos', ['answer_id']);
-    await queryInterface.addIndex('photos', ['user_id']);
-    await queryInterface.addIndex('photos', ['cloudinary_public_id']);
+    await queryInterface.addIndex('photos', ['auditId']);
+    await queryInterface.addIndex('photos', ['answerId']);
+    await queryInterface.addIndex('photos', ['userId']);
+    await queryInterface.addIndex('photos', ['cloudinaryPublicId']);
   },
 
   async down(queryInterface, Sequelize) {
