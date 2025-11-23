@@ -100,7 +100,7 @@ export default {
         const auditsData = await auditsDataTable.toArray();
         if (auditsData.length > 0) {
           const activeAudit = auditsData[0];
-          commit('setCurrentAudit', activeAudit.audit);
+          commit('setCurrentAudit', { ...activeAudit });
           commit('setAnswers', activeAudit.answers || {});
           commit('setStartedAt', activeAudit.startedAt);
           if (activeAudit.startLocation) {
@@ -112,7 +112,7 @@ export default {
           commit('setHydrated', true);
           console.log(
             'Active audit hydrated from IndexedDB:',
-            activeAudit.audit.localId,
+            activeAudit.localId,
           );
           return activeAudit;
         }
@@ -131,7 +131,7 @@ export default {
         const auditData = await auditsDataTable.get(localId);
 
         if (auditData) {
-          commit('setCurrentAudit', auditData.audit);
+          commit('setCurrentAudit', { ...auditData });
           commit('setAnswers', auditData.answers || {});
           commit('setStartedAt', auditData.startedAt);
           if (auditData.startLocation) {
@@ -162,10 +162,7 @@ export default {
         const isValid = requiredQuestions.every(q => state.answers[q.id] !== undefined);
 
         const auditData = {
-          localId: state.currentAudit.localId,
-          templateId: state.currentAudit.templateId,
-          locationId: state.currentAudit.locationId || '',
-          audit: JSON.parse(JSON.stringify(state.currentAudit)),
+          ...JSON.parse(JSON.stringify(state.currentAudit)),
           answers: JSON.parse(JSON.stringify(state.answers)),
           startedAt: state.startedAt,
           startLocation: state.startLocation

@@ -18,14 +18,14 @@
       >
         <q-item-section>
           <q-item-label class="text-weight-medium">
-            {{ audit.audit.name }}
+            {{ audit.name }}
           </q-item-label>
-          <q-item-label v-if="audit.audit.description" caption>
-            {{ audit.audit.description }}
+          <q-item-label v-if="audit.description" caption>
+            {{ audit.description }}
           </q-item-label>
-          <q-item-label v-if="audit.audit.location" caption class="q-mt-xs">
+          <q-item-label v-if="audit.location" caption class="q-mt-xs">
             <q-icon name="place" size="xs" />
-            {{ audit.audit.location.name }}
+            {{ audit.location.name }}
           </q-item-label>
           <q-item-label caption>
             {{ formatDate(audit.startedAt) }}
