@@ -8,8 +8,6 @@ import Location from "./Location.js";
 import Audit from "./Audit.js";
 import AuditQuestion from "./AuditQuestion.js";
 import Answer from "./Answer.js";
-import Attachment from "./Attachment.js";
-import AuditHistory from "./AuditHistory.js";
 import Photo from "./Photo.js";
 
 Company.hasMany(User, { foreignKey: "companyId", as: "users" });
@@ -60,30 +58,6 @@ Answer.belongsTo(AuditQuestion, {
   as: "auditQuestion",
 });
 
-Answer.hasMany(Attachment, {
-  foreignKey: "answerId",
-  as: "attachments",
-  onDelete: "CASCADE",
-  hooks: true,
-});
-Attachment.belongsTo(Answer, { foreignKey: "answerId", as: "answer" });
-
-Audit.hasMany(Attachment, {
-  foreignKey: "auditId",
-  as: "attachments",
-  onDelete: "CASCADE",
-  hooks: true,
-});
-Attachment.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
-
-Audit.hasMany(AuditHistory, {
-  foreignKey: "auditId",
-  as: "history",
-  onDelete: "CASCADE",
-  hooks: true,
-});
-AuditHistory.belongsTo(Audit, { foreignKey: "auditId", as: "audit" });
-
 Audit.hasMany(Photo, {
   foreignKey: "auditId",
   as: "photos",
@@ -113,7 +87,5 @@ export {
   Audit,
   AuditQuestion,
   Answer,
-  Attachment,
-  AuditHistory,
   Photo,
 };
