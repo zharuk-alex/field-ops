@@ -71,7 +71,7 @@ import langUk from 'quasar/lang/uk';
 import langEn from 'quasar/lang/en-GB';
 import { capitalizeStr } from '@/helpers';
 import { Dark, LocalStorage } from 'quasar';
-import { computed, watch, onBeforeMount } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
 
@@ -120,11 +120,6 @@ const toggleMode = () => {
   Dark.toggle();
   LocalStorage.set('dark_mode', Dark.isActive);
 };
-
-onBeforeMount(() => {
-  const dark_mode = LocalStorage.getItem('dark_mode') || false;
-  Dark.set(dark_mode);
-});
 </script>
 
 <style lang="scss" scoped>

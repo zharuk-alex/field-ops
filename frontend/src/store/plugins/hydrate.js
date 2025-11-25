@@ -2,7 +2,7 @@ const TOKEN_KEY =
   import.meta.env.VITE_STORAGE_TOKEN_KEY ||
   `field-ops:${import.meta.env.VITE_BUILD_TARGET || 'pwa'}:token`;
 
-import { LocalStorage, Dark } from 'quasar';
+import { LocalStorage } from 'quasar';
 
 export default function hydrate(store) {
   try {
@@ -10,7 +10,7 @@ export default function hydrate(store) {
     if (token) store.commit('auth/setToken', token);
 
     const dark_mode = LocalStorage.getItem('dark_mode') || false;
-    Dark.set(dark_mode);
+    store.commit('uiServices/SET_DARK_MODE', dark_mode);
   } catch (error) {
     console.error(error);
   }

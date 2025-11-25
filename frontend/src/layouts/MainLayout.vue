@@ -17,10 +17,13 @@ import AppNavbar from '@/components/AppNavbar.vue';
 import AppBreadcrumbs from '@/components/AppBreadcrumbs.vue';
 import AppDrawer from '@/components/AppDrawer.vue';
 import AppFooter from '@/components/AppFooter.vue';
-import { ref, provide } from 'vue';
+import { ref, provide, onBeforeMount } from 'vue';
+import { Dark } from 'quasar';
+import { useStore } from 'vuex';
 
 const isAppDrawer = ref(false);
 const clearAuditTrigger = ref(0);
+const $store = useStore();
 
 function toggleLeftDrawer() {
   isAppDrawer.value = !isAppDrawer.value;
@@ -31,4 +34,8 @@ function handleClearAudit() {
 }
 
 provide('clearAuditTrigger', clearAuditTrigger);
+
+onBeforeMount(() => {
+  Dark.set($store.getters['uiServices/darkMode']);
+});
 </script>

@@ -5,17 +5,22 @@ export default {
 
   state: () => ({
     isOnline: true,
+    darkMode: false,
     notifications: [],
   }),
 
   getters: {
     isOnline: state => state.isOnline,
+    darkMode: state => state.darkMode,
     notifications: state => state.notifications,
   },
 
   mutations: {
     SET_IS_ONLINE(state, payload) {
       state.isOnline = payload;
+    },
+    SET_DARK_MODE(state, payload) {
+      state.darkMode = payload;
     },
     ADD_NOTIFICATION(state, payload) {
       state.notifications.push(payload);
