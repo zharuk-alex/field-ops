@@ -260,37 +260,58 @@ export default {
         });
 
         const auditId = result.data.id;
+        let answerMapping = {};
+
+        if (result.data.items) {
+          result.data.items.forEach(item => {
+            if (item.answers && item.answers.length > 0) {
+              answerMapping[item.questionId] = item.answers[0].id;
+            }
+          });
+        }
+
+        await auditsDataTable.update(state.currentAudit.localId, {
+          serverId: auditId,
+          answerMapping,
+          submittedAt: new Date().toISOString(),
+        });
+
+        let hasFailedPhotos = false;
+
         if (auditId) {
           try {
             const { usePhotoSync } = await import('@/composable/usePhotoSync');
-            const { syncAuditPhotos } = usePhotoSync();
-
-            const answerMapping = {};
-            if (result.data.items) {
-              result.data.items.forEach(item => {
-                if (item.answers && item.answers.length > 0) {
-                  answerMapping[item.questionId] = item.answers[0].id;
-                }
-              });
-            }
+            const { syncAuditPhotos, getSyncStatus } = usePhotoSync();
 
             await syncAuditPhotos(
               state.currentAudit.localId,
               auditId,
               answerMapping,
             );
+
+            const syncStatus = await getSyncStatus(state.currentAudit.localId);
+            hasFailedPhotos = syncStatus.error > 0;
           } catch (photoError) {
             console.error('Failed to sync photos:', photoError);
+            hasFailedPhotos = true;
           }
         }
 
         await photosTable
-          .where('auditLocalId')
-          .equals(state.currentAudit.localId)
+          .where('[auditLocalId+status]')
+          .equals([state.currentAudit.localId, 'synced'])
           .delete();
-        await auditsDataTable.delete(state.currentAudit.localId);
+
+        if (!hasFailedPhotos) {
+          await auditsDataTable.delete(state.currentAudit.localId);
+        }
 
         commit('clearCurrentAudit');
+
+        if (hasFailedPhotos) {
+          throw new Error('Some photos failed to upload');
+        }
+
         return result.data;
       } catch (error) {
         console.error('submitAudit error', error);

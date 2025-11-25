@@ -106,6 +106,9 @@ export default {
   auditNotFound: 'Аудит не знайдено',
   failedToLoadAudit: 'Не вдалося завантажити аудит',
   auditSubmittedSuccessfully: 'Аудит успішно відправлено',
+  auditSubmittedWithPhotoErrors:
+    'Аудит відправлено, але деякі фото не завантажились',
+  somePhotosStillFailed: 'Деякі фото все ще не завантажились',
   failedToSubmitAudit: 'Не вдалося відправити аудит',
   auditSavedOffline:
     'Аудит збережено. Буде відправлено при підключенні до інтернету.',

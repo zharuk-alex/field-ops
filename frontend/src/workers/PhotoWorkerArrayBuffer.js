@@ -14,7 +14,6 @@ const fmt = d => {
 const photoBoxSize = {
   img: { maxWidth: 1200, maxHeight: 900 },
   thumb: { maxWidth: 250, maxHeight: 250 },
-  recog: { maxWidth: 3600, maxHeight: 3600 },
 };
 
 const getScaledSize = (srcW, srcH, box) => {
@@ -40,32 +39,27 @@ async function resizeToBlob(
 }
 
 self.onmessage = async e => {
-  const { file, hasRecog } = e.data;
+  const { file } = e.data;
   try {
-    const [imgBlob, thumbBlob, recogBlob] = await Promise.all([
+    const [imgBlob, thumbBlob] = await Promise.all([
       resizeToBlob(file, photoBoxSize.img, 0.82, 'image/jpeg'),
       resizeToBlob(file, photoBoxSize.thumb, 0.8, 'image/jpeg'),
-      hasRecog
-        ? resizeToBlob(file, photoBoxSize.recog, 0.9, 'image/jpeg')
-        : null,
     ]);
 
-    const [fullAb, thumbAb, recogAb] = await Promise.all([
+    const [fullAb, thumbAb] = await Promise.all([
       imgBlob.arrayBuffer(),
       thumbBlob.arrayBuffer(),
-      recogBlob ? recogBlob.arrayBuffer() : null,
     ]);
 
     self.postMessage(
       {
         fullAb,
         thumbAb,
-        recogAb,
         lastModified: file.lastModified,
         added: fmt(new Date()),
         mime: 'image/jpeg',
       },
-      [fullAb, thumbAb, ...(recogAb ? [recogAb] : [])],
+      [fullAb, thumbAb],
     );
   } catch (err) {
     self.postMessage({ error: err.message });

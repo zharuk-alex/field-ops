@@ -384,10 +384,19 @@ async function performSubmit() {
     $router.push({ name: 'home' });
   } catch (err) {
     console.error('Submit audit error', err);
-    $store.dispatch('uiServices/showNotification', {
-      message: err?.response?.data?.message || t('failedToSubmitAudit'),
-      color: 'negative',
-    });
+
+    if (err.message === 'Some photos failed to upload') {
+      $store.dispatch('uiServices/showNotification', {
+        message: t('auditSubmittedWithPhotoErrors'),
+        color: 'warning',
+      });
+      $router.push({ name: 'home' });
+    } else {
+      $store.dispatch('uiServices/showNotification', {
+        message: err?.response?.data?.message || t('failedToSubmitAudit'),
+        color: 'negative',
+      });
+    }
   } finally {
     submitting.value = false;
   }

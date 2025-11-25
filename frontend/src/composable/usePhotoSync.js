@@ -154,6 +154,20 @@ export function usePhotoSync() {
     };
   }
 
+  async function cleanupAuditPhotos(auditLocalId) {
+    await photosTable
+      .where('[auditLocalId+status]')
+      .equals([auditLocalId, 'synced'])
+      .delete();
+
+    const remainingFailed = await photosTable
+      .where('[auditLocalId+status]')
+      .equals([auditLocalId, 'error'])
+      .count();
+
+    return remainingFailed === 0;
+  }
+
   return {
     isSyncing,
     syncProgress,
@@ -163,5 +177,6 @@ export function usePhotoSync() {
     retryFailedPhotos,
     deletePhoto,
     getSyncStatus,
+    cleanupAuditPhotos,
   };
 }

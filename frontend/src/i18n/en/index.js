@@ -106,6 +106,9 @@ export default {
   auditNotFound: 'Audit not found',
   failedToLoadAudit: 'Failed to load audit',
   auditSubmittedSuccessfully: 'Audit submitted successfully',
+  auditSubmittedWithPhotoErrors:
+    'Audit submitted, but some photos failed to upload',
+  somePhotosStillFailed: 'Some photos still failed to upload',
   failedToSubmitAudit: 'Failed to submit audit',
   auditSavedOffline: 'Audit saved. Will be submitted when online.',
   enterNumber: 'Enter number',

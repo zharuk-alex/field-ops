@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useGlobMixin } from '@/composable/useGlobalMixin';
 import { auditsDataTable, photosTable } from '@/boot/db';
 
@@ -69,6 +69,7 @@ const { $store, t, $router, $q } = useGlobMixin();
 const loading = ref(true);
 const audits = ref([]);
 const submittingAuditId = ref(null);
+const failedPhotoCounts = ref({});
 
 const isOnline = computed(() => $store.getters['uiServices/isOnline']);
 
@@ -79,11 +80,27 @@ async function loadAudits() {
     audits.value = data.sort(
       (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
     );
+
+    await loadFailedPhotoCounts();
   } catch (err) {
     console.error('Load audits error', err);
   } finally {
     loading.value = false;
   }
+}
+
+async function loadFailedPhotoCounts() {
+  const counts = {};
+  for (const audit of audits.value) {
+    const failedPhotos = await photosTable
+      .where('[auditLocalId+status]')
+      .equals([audit.localId, 'error'])
+      .count();
+    if (failedPhotos > 0) {
+      counts[audit.localId] = failedPhotos;
+    }
+  }
+  failedPhotoCounts.value = counts;
 }
 
 function formatDate(dateString) {
@@ -117,21 +134,66 @@ async function submitAudit(auditData) {
   try {
     submittingAuditId.value = auditData.localId;
 
-    await $store.dispatch('pwaAudits/loadAuditByLocalId', auditData.localId);
-    await $store.dispatch('pwaAudits/submitAudit');
+    if (auditData.serverId && auditData.answerMapping) {
+      const { usePhotoSync } = await import('@/composable/usePhotoSync');
+      const { retryFailedPhotos } = usePhotoSync();
 
-    audits.value = audits.value.filter(a => a.localId !== auditData.localId);
+      await retryFailedPhotos(
+        auditData.localId,
+        auditData.serverId,
+        auditData.answerMapping,
+      );
 
-    $q.notify({
-      message: t('auditSubmittedSuccessfully'),
-      color: 'positive',
-    });
+      const remainingFailed = await photosTable
+        .where('[auditLocalId+status]')
+        .equals([auditData.localId, 'error'])
+        .count();
+
+      if (remainingFailed === 0) {
+        await photosTable
+          .where('auditLocalId')
+          .equals(auditData.localId)
+          .delete();
+        await auditsDataTable.delete(auditData.localId);
+        audits.value = audits.value.filter(a => a.localId !== auditData.localId);
+
+        $q.notify({
+          message: t('auditSubmittedSuccessfully'),
+          color: 'positive',
+        });
+      } else {
+        await loadFailedPhotoCounts();
+        $q.notify({
+          message: t('somePhotosStillFailed'),
+          color: 'warning',
+        });
+      }
+    } else {
+      await $store.dispatch('pwaAudits/loadAuditByLocalId', auditData.localId);
+      await $store.dispatch('pwaAudits/submitAudit');
+
+      audits.value = audits.value.filter(a => a.localId !== auditData.localId);
+
+      $q.notify({
+        message: t('auditSubmittedSuccessfully'),
+        color: 'positive',
+      });
+    }
   } catch (err) {
     console.error('Submit audit error', err);
-    $q.notify({
-      message: t('failedToSubmitAudit'),
-      color: 'negative',
-    });
+
+    if (err.message === 'Some photos failed to upload') {
+      await loadAudits();
+      $q.notify({
+        message: t('auditSubmittedWithPhotoErrors'),
+        color: 'warning',
+      });
+    } else {
+      $q.notify({
+        message: t('failedToSubmitAudit'),
+        color: 'negative',
+      });
+    }
   } finally {
     submittingAuditId.value = null;
   }
@@ -166,8 +228,20 @@ async function deleteAudit(auditData) {
   }
 }
 
+let refreshInterval = null;
+
 onMounted(() => {
   loadAudits();
+
+  refreshInterval = setInterval(() => {
+    loadFailedPhotoCounts();
+  }, 5000);
+});
+
+onUnmounted(() => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+  }
 });
 </script>
 

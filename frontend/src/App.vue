@@ -5,13 +5,14 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useGlobMixin } from './composable/useGlobalMixin';
+import { useNetworkStatus } from './composable/useNetworkStatus';
 import { useI18n } from 'vue-i18n';
 
 const { $store, $q } = useGlobMixin();
 const { locale } = useI18n({ useScope: 'global' });
 
-const handleOnlineStatus = () =>
-  $store.commit('uiServices/SET_IS_ONLINE', navigator.onLine);
+useNetworkStatus();
+
 const ensurePersistence = async function () {
   if (navigator.storage?.persist) {
     const already = await navigator.storage.persisted();
@@ -36,12 +37,10 @@ onMounted(async () => {
     document.title = 'Field Ops Admin';
   }
 
-  window.addEventListener('online', handleOnlineStatus);
-  window.addEventListener('offline', handleOnlineStatus);
-  handleOnlineStatus();
-
   window.addEventListener('error', event => {
-    if (event.message?.includes('Failed to fetch dynamically imported module')) {
+    if (
+      event.message?.includes('Failed to fetch dynamically imported module')
+    ) {
       if (!sessionStorage.getItem('page-reloaded')) {
         sessionStorage.setItem('page-reloaded', 'true');
         window.location.reload();
