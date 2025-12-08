@@ -45,6 +45,7 @@
                   map-options
                   filled
                   :disable="disabledLangSelect"
+                  :popup-content-style="{ maxWidth: 400 }"
                 >
                   <template v-slot:prepend>
                     <q-icon name="mdi-web" />

@@ -7,6 +7,7 @@ export const createTemplateSchema = Joi.object({
   companyId: Joi.string().uuid().optional(),
   questions: Joi.array().items(Joi.string().uuid()).default([]),
   locations: Joi.array().items(Joi.string().uuid()).default([]),
+  restrictPhotoAge: Joi.boolean().default(true),
   status: Joi.string().valid("active", "inactive").default("active"),
 });
 
@@ -16,6 +17,7 @@ export const updateTemplateSchema = Joi.object({
   companyId: Joi.string().uuid().optional(),
   questions: Joi.array().items(Joi.string().uuid()).optional(),
   locations: Joi.array().items(Joi.string().uuid()).optional(),
+  restrictPhotoAge: Joi.boolean().optional(),
   status: Joi.string().valid("active", "inactive").optional(),
 });
 

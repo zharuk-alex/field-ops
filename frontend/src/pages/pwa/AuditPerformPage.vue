@@ -239,6 +239,9 @@
         />
       </div>
     </Teleport>
+    <q-dialog v-model="submitting" persistent style="z-index: 6005">
+      <q-spinner-gears color="white" size="3rem" :thickness="5" />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -591,15 +594,19 @@ function saveComment(value) {
   $store.dispatch('pwaAudits/setComment', value);
 }
 
-watch(currentAudit, newAudit => {
-  if (newAudit?.meta?.comment) {
-    auditComment.value = newAudit.meta.comment;
-  } else {
-    auditComment.value = '';
-  }
-}, { immediate: true });
+watch(
+  currentAudit,
+  newAudit => {
+    if (newAudit?.meta?.comment) {
+      auditComment.value = newAudit.meta.comment;
+    } else {
+      auditComment.value = '';
+    }
+  },
+  { immediate: true },
+);
 
-watch(clearAuditTrigger, (newVal) => {
+watch(clearAuditTrigger, newVal => {
   if (newVal > 0) {
     showClearConfirmDialog.value = true;
   }
