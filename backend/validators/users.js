@@ -4,15 +4,23 @@ import { USERS_ALLOWED_SORT } from "#root/constants/index.js";
 export const createUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
+  firstName: Joi.string().optional().allow("", null),
+  lastName: Joi.string().optional().allow("", null),
   role: Joi.string().valid("admin", "manager", "auditor").optional(),
   companyId: Joi.string().uuid().optional().allow(null),
+  status: Joi.string().valid("active", "inactive").optional(),
+  meta: Joi.object().unknown(true).optional().allow(null),
 });
 
 export const updateUserSchema = Joi.object({
   email: Joi.string().email().optional(),
   password: Joi.string().min(6).optional(),
+  firstName: Joi.string().optional().allow("", null),
+  lastName: Joi.string().optional().allow("", null),
   role: Joi.string().valid("admin", "manager", "auditor").optional(),
   companyId: Joi.string().uuid().optional().allow(null),
+  status: Joi.string().valid("active", "inactive").optional(),
+  meta: Joi.object().unknown(true).optional().allow(null),
 });
 
 export const listUsersSchema = Joi.object({
