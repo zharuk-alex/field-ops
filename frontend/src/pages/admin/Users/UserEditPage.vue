@@ -143,7 +143,7 @@ const isNew = computed(() => !id.value);
 const saving = ref(false);
 const metaText = ref('');
 
-const ROLES = ['admin', 'manager', 'user'];
+const ROLES = ['admin', 'manager', 'auditor'];
 const roleOptions = ROLES.map(v => ({ label: t(v), value: v }));
 
 const STATUS = ['active', 'inactive'];
@@ -163,7 +163,7 @@ const form = reactive({
   lastName: '',
   email: '',
   password: '',
-  role: 'user',
+  role: 'auditor',
   companyId: null,
   meta: null,
   status: 'active',
@@ -174,7 +174,7 @@ function resetForm() {
   form.lastName = '';
   form.email = '';
   form.password = '';
-  form.role = 'user';
+  form.role = 'auditor';
   form.companyId = null;
   form.meta = null;
   metaText.value = '';
@@ -204,7 +204,7 @@ async function load() {
     form.lastName = data.lastName || '';
     form.email = data.email || '';
     form.password = '';
-    form.role = data.role || 'user';
+    form.role = data.role || 'auditor';
     form.companyId = data.companyId || null;
     form.status = data.status || 'active';
     form.meta = data.meta ?? null;
