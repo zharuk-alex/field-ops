@@ -176,11 +176,15 @@
                       </div>
                       <div class="row q-gutter-sm">
                         <div
-                          v-for="photo in answer.photos"
+                          v-for="(photo, photoIndex) in answer.photos"
                           :key="photo.id"
                           class="photo-thumbnail"
                           @click="
-                            openPhotoDialog(photo, item.question.questionText)
+                            openPhotoGallery(
+                              answer.photos,
+                              photoIndex,
+                              item.questionText,
+                            )
                           "
                         >
                           <img
@@ -218,10 +222,10 @@
 
           <div class="row q-gutter-md">
             <div
-              v-for="photo in audit.photos"
+              v-for="(photo, photoIndex) in audit.photos"
               :key="photo.id"
               class="photo-card"
-              @click="openPhotoDialog(photo)"
+              @click="openPhotoGallery(audit.photos, photoIndex)"
             >
               <img
                 :src="photo.thumbnailUrl || photo.url"
@@ -246,7 +250,8 @@
 
     <PhotoDialog
       v-model="showPhotoDialog"
-      :photo="selectedPhoto"
+      :photos="selectedPhotos"
+      :initial-index="selectedPhotoIndex"
       :info-text="selectedPhotoQuestion"
     />
   </q-page>
@@ -266,7 +271,8 @@ const { calculateDistance, formatDistance } = useGeoposition();
 const auditId = computed(() => $route.params.id);
 const loading = ref(false);
 const showPhotoDialog = ref(false);
-const selectedPhoto = ref(null);
+const selectedPhotos = ref([]);
+const selectedPhotoIndex = ref(0);
 const selectedPhotoQuestion = ref(null);
 
 const audit = computed(() => $store.getters['adminAudits/currentAudit']);
@@ -361,8 +367,9 @@ function formatAnswerValue(value, type) {
   return String(value);
 }
 
-function openPhotoDialog(photo, questionText = null) {
-  selectedPhoto.value = photo;
+function openPhotoGallery(photos, index, questionText = null) {
+  selectedPhotos.value = photos;
+  selectedPhotoIndex.value = index;
   selectedPhotoQuestion.value = questionText;
   showPhotoDialog.value = true;
 }
