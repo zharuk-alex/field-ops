@@ -6,11 +6,24 @@ import bcrypt from "bcrypt";
 export const createUser = async ({
   email,
   password,
+  firstName = null,
+  lastName = null,
   role = "auditor",
   companyId = null,
+  status = "active",
+  meta = null,
 }) => {
   const hash = await bcrypt.hash(password, 10);
-  const user = await User.create({ email, password: hash, role, companyId });
+  const user = await User.create({
+    email,
+    password: hash,
+    firstName,
+    lastName,
+    role,
+    companyId,
+    status,
+    meta,
+  });
   const { password: _p, ...rest } = user.toJSON();
   return rest;
 };
