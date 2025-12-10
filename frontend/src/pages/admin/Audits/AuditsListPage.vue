@@ -7,7 +7,7 @@
       action-name="getAudits"
       edit-route-name="admin:audit:view"
       :columns="columns"
-      :custom-body-cell-slots="['status', 'company', 'location', 'assignee']"
+      :custom-body-cell-slots="['status', 'companyName', 'locationName', 'assigneeName']"
       :initial-sort="{ sortBy: 'endsAt', descending: true }"
     >
       <template #body-cell-status="{ props }">
@@ -18,19 +18,19 @@
         </q-td>
       </template>
 
-      <template #body-cell-company="{ props }">
+      <template #body-cell-companyName="{ props }">
         <q-td :props="props">
           {{ props.row.company?.name || '-' }}
         </q-td>
       </template>
 
-      <template #body-cell-location="{ props }">
+      <template #body-cell-locationName="{ props }">
         <q-td :props="props">
           {{ props.row.location?.name || '-' }}
         </q-td>
       </template>
 
-      <template #body-cell-assignee="{ props }">
+      <template #body-cell-assigneeName="{ props }">
         <q-td :props="props">
           <div v-if="props.row.assignee">
             {{ props.row.assignee.firstName }} {{ props.row.assignee.lastName }}
@@ -69,28 +69,28 @@ const columns = computed(() => [
     sortable: true,
   },
   {
-    name: 'template',
+    name: 'templateName',
     label: t('template'),
     field: row => row.template?.name || '-',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'company',
+    name: 'companyName',
     label: t('company'),
     field: row => row.company?.name || '-',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'location',
+    name: 'locationName',
     label: t('location'),
     field: row => row.location?.name || '-',
     align: 'left',
     sortable: true,
   },
   {
-    name: 'assignee',
+    name: 'assigneeName',
     label: t('assignee'),
     field: row =>
       row.assignee ? `${row.assignee.firstName} ${row.assignee.lastName}` : '-',

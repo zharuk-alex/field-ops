@@ -12,7 +12,7 @@ export function useAdminTable(config) {
     initialSort = null,
   } = config;
 
-  const { $store, t, $router, $route } = useGlobMixin();
+  const { $store, t, $router } = useGlobMixin();
 
   const loading = ref(false);
   const tableRef = ref(null);
@@ -60,6 +60,8 @@ export function useAdminTable(config) {
     const { page, rowsPerPage, sortBy, descending } = props.pagination;
     const search = props.filter ?? '';
 
+    if (loading.value) return;
+
     loading.value = true;
     try {
       await $store.dispatch(`${storeModule}/${actionName}`, {
@@ -77,11 +79,6 @@ export function useAdminTable(config) {
       paginationLocal.value.rowsPerPage = meta.limit ?? rowsPerPage;
       paginationLocal.value.sortBy = sortBy;
       paginationLocal.value.descending = descending;
-
-      await $router.push({
-        path: $route.path,
-        query: { ...paginationLocal.value },
-      });
     } catch (err) {
       console.error(`${storeModule}/${actionName} error:`, err);
     } finally {
@@ -89,7 +86,7 @@ export function useAdminTable(config) {
     }
   }
 
-  const clickRow = (evt, row) => {
+  const clickRow = (_evt, row) => {
     if (editRouteName && row.id) {
       $router.push({ name: editRouteName, params: { id: String(row.id) } });
     }
