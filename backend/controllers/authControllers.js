@@ -33,9 +33,9 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const { user, token } = await authServices.loginUser(req.body);
 
-  if (!user.verify) {
-    return res.status(404).json({ message: "Email not verified" });
-  }
+  // if (!user.verify) {
+  //   return res.status(404).json({ message: "Email not verified" });
+  // }
 
   res.json({
     token,
