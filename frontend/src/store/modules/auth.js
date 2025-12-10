@@ -49,6 +49,10 @@ export default {
       if (data.user) {
         LocalStorage.setItem(USER_KEY, data.user)
       }
+
+      const dark_mode = LocalStorage.getItem('dark_mode') || false
+      commit('uiServices/SET_DARK_MODE', dark_mode, { root: true })
+
       return data
     },
 
